@@ -6,7 +6,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export const HomeNavbar = () => {
   return (
-    <nav className="fixed top-0 right-0 left-0 w-full flex items-center h-16 px-4 pr-5 bg-white z-50">
+    <nav className="fixed top-0 right-0 left-0 w-full flex items-center h-16 px-4 pr-5 bg-background z-50">
       <div className="flex items-center w-full gap-4">
         <div className="flex items-center shrink-0 ">
           <SidebarTrigger />

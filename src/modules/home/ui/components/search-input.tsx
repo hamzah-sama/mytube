@@ -11,13 +11,13 @@ export const SearchInput = () => {
         "
       >
         <Input
-          className="w-full rounded-l-full pr-10 pl-5 py-2 focus:outline-none border-r-none "
+          className="w-full rounded-l-full pr-10 pl-5 py-2 focus:outline-none border-r-0 "
           placeholder="Search"
         />
         <Button
           variant="default"
           type="submit"
-          className="border-l-none rounded-r-full bg-gray-100 text-foreground hover:bg-gray-200 hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+          className="border-l-0 rounded-r-full bg-gray-100 text-foreground hover:bg-gray-200 hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <SearchIcon />
         </Button>

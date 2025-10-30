@@ -38,7 +38,7 @@ const mainItems = [
 const PersonalItems = [
   {
     title: "History",
-    url: "playlisst/history",
+    url: "playlist/history",
     icon: HistoryIcon,
     auth: true,
   },
