@@ -1,10 +1,10 @@
-import HomeLayout from "@/modules/home/ui/layout";
+import { HomeView } from "@/modules/home/ui/view/home-view";
 
 const Page = () => {
   return (
-    <HomeLayout>
-      <h1>Home</h1>
-    </HomeLayout>
+    <div>
+      <HomeView />
+    </div>
   );
 };
 

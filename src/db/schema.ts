@@ -1,3 +1,4 @@
+import { desc } from "drizzle-orm";
 import { pgTable, uuid, text, timestamp } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
@@ -6,6 +7,14 @@ export const users = pgTable("users", {
   name: text("name").notNull(),
   imageUrl: text("image_url").notNull(),
   email: text("email").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const categories = pgTable("categories", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
