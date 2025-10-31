@@ -12,10 +12,10 @@ export async function POST(req: NextRequest) {
     // For this guide, log payload to console
     const { id } = evt.data;
     const eventType = evt.type;
-    console.log(
-      `Received webhook with ID ${id} and event type of ${eventType}`
-    );
-    console.log("Webhook payload:", evt.data);
+    // console.log(
+    //   `Received webhook with ID ${id} and event type of ${eventType}`
+    // );
+    // console.log("Webhook payload:", evt.data);
 
     if (eventType === "user.created") {
       const { data } = evt;
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
     }
     if (eventType === "user.deleted") {
       const { data } = evt;
-      if (!data.id) throw new Response("user not found", { status: 400 });
+      if (!data.id) return new Response("user not found", { status: 400 });
       await db.delete(users).where(eq(users.clerkId, data.id));
     }
 

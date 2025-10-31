@@ -55,6 +55,7 @@ export const FilterCarousel = ({ data, value, onSelect, }: Props) => {
             <Badge
               className="text-sm py-2 px-4 rounded-md"
               variant={value === null ? "default" : "secondary"}
+              onClick={()=>onSelect?.(null)}
             >
               All
             </Badge>
