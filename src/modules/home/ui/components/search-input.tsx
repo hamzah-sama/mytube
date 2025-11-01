@@ -17,7 +17,7 @@ export const SearchInput = () => {
         <Button
           variant="default"
           type="submit"
-          className="border-l-0 rounded-r-full bg-gray-100 text-foreground hover:bg-gray-200 hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+          className="border-l-0 rounded-r-full bg-gray-100 dark:bg-gray-700 text-foreground hover:bg-gray-200 hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <SearchIcon />
         </Button>

@@ -15,5 +15,5 @@ export const CategoriesSection = () => {
 
   const data = categories.map(({ name, id }) => ({ name, id }));
 
-  return <FilterCarousel data={data} onSelect={(x) => {setValue(x)}} value={value} isLoading={isLoading}/>;
+  return <FilterCarousel data={data} onSelect={(x) => {setValue(x)}} value={value}/>;
 };
