@@ -17,7 +17,7 @@ interface Props {
   onSelect?: (value: string | null) => void;
 }
 
-export const FilterCarousel = ({ data, value, onSelect, }: Props) => {
+export const FilterCarousel = ({ data, value, onSelect }: Props) => {
   const [api, setApi] = useState<CarouselApi>();
   const [count, setCount] = useState(0);
   const [current, setCurrent] = useState(0);
@@ -33,12 +33,11 @@ export const FilterCarousel = ({ data, value, onSelect, }: Props) => {
     });
   }, [api]);
 
-
   return (
     <div className="relative w-full">
       <div
         className={cn(
-          "absolute left-10 w-5 top-0 bottom-0 z-10 bg-linear-to-l from-white to-transparent pointer-events-none",
+          "absolute left-10 w-10 top-0 bottom-0 z-10 bg-gradient-to-l from-primary/10 to-transparent dark:from-primary/20 pointer-events-none rounded-r-md",
           current === 1 && "hidden"
         )}
       />
@@ -55,7 +54,7 @@ export const FilterCarousel = ({ data, value, onSelect, }: Props) => {
             <Badge
               className="text-sm py-2 px-4 rounded-md"
               variant={value === null ? "default" : "secondary"}
-              onClick={()=>onSelect?.(null)}
+              onClick={() => onSelect?.(null)}
             >
               All
             </Badge>
@@ -77,7 +76,12 @@ export const FilterCarousel = ({ data, value, onSelect, }: Props) => {
         <CarouselPrevious className="left-0 z-40" />
         <CarouselNext className="right-0 z-40" />
       </Carousel>
-      <div className={cn("absolute right-12 top-0 bottom-0 z-10 bg-linear-to-r from-white to-transparent w-5 pointer-events-none", current === count && "hidden")} />
+      <div
+        className={cn(
+          "absolute right-12 top-0 bottom-0 z-10 bg-gradient-to-r from-primary/10 to-transparent dark:from-primary/20 w-10 rounded-l-md pointer-events-none",
+          current === count && "hidden"
+        )}
+      />
     </div>
   );
 };

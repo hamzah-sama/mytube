@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Inter } from "next/font/google";
 import { TRPCReactProvider } from "@/trpc/client";
+import { ThemeProvider } from "next-themes";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -22,8 +23,12 @@ export default function RootLayout({
   return (
     <TRPCReactProvider>
       <ClerkProvider>
-        <html lang="en">
-          <body className={`${inter.variable} antialiased`}>{children}</body>
+        <html lang="en" suppressHydrationWarning>
+          <body className={`${inter.variable} antialiased`}>
+            <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+              {children}
+            </ThemeProvider>
+          </body>
         </html>
       </ClerkProvider>
     </TRPCReactProvider>

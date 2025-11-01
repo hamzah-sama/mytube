@@ -23,10 +23,10 @@ export const HomeView = async() => {
 
 const CategorySectionSkeleton = () => {
   return (
-    <div className="flex items-center gap-4 px-10">
+    <div className="flex items-center gap-4 px-10 overflow-hidden">
       {Array.from({ length: 15 }).map((_, index) => (
         <div key={index}>
-          <Skeleton className="w-28 h-7 bg-gray-200 animate-pulse rounded-md" />
+          <Skeleton className="w-28 h-7 bg-gray-200 dark:bg-gray-700 animate-pulse rounded-md" />
         </div>
       ))}
     </div>
