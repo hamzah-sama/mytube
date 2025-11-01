@@ -1,6 +1,5 @@
 import { auth } from "@clerk/nextjs/server";
 import { initTRPC, TRPCError } from "@trpc/server";
-import { stat } from "fs";
 import { cache } from "react";
 import superjson from "superjson";
 export const createTRPCContext = cache(async () => {

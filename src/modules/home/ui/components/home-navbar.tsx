@@ -1,9 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { SearchInput } from "./search-input";
-import { AuthButton } from "./auth-button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { ThemeToggle } from "./theme-toggle";
+import { AuthButton } from "@/components/auth-button";
+import { ThemeToggle } from "@/components/theme/themeToggle";
 
 export const HomeNavbar = () => {
   return (
@@ -13,7 +13,9 @@ export const HomeNavbar = () => {
           <SidebarTrigger />
           <Link href="/" className="flex items-center gap-1 p-4">
             <Image src="/logo.svg" alt="Logo" width={32} height={32} />
-            <span className="text-xl font-bold tracking-tight -translate-y-0.5">Mytube</span>
+            <span className="text-xl font-bold tracking-tight -translate-y-0.5">
+              Mytube
+            </span>
           </Link>
         </div>
 

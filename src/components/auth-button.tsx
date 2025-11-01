@@ -7,10 +7,8 @@ import {
   UserCircleIcon,
 } from "lucide-react";
 
-import { useTheme } from "next-themes";
 
 export const AuthButton = () => {
-  const { setTheme, theme } = useTheme();
   return (
     <>
       <SignedOut>

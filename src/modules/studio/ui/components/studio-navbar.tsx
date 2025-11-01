@@ -1,10 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-import { AuthButton } from "./auth-button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { ThemeToggle } from "./theme-toggle";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AuthButton } from "@/components/auth-button";
+import { ThemeToggle } from "@/components/theme/themeToggle";
 
 export const StudioNavbar = () => {
   return (
@@ -24,8 +24,8 @@ export const StudioNavbar = () => {
 
         <div className="flex items-center gap-4 shrink-0">
           <ThemeToggle />
-          <Button variant='secondary' className="text-base font-medium">
-            <Plus className='size-4'/>
+          <Button variant="secondary" className="text-base font-medium">
+            <Plus className="size-4" />
             Create video
           </Button>
           <AuthButton />

@@ -3,10 +3,6 @@ import { StudioNavbar } from "../components/studio-navbar";
 import { StudioSidebar } from "../components/studio-sidebar";
 import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
-import { getQueryClient, trpc } from "@/trpc/server";
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import { ErrorBoundary } from "react-error-boundary";
-import { Suspense } from "react";
 
 interface Props {
   children: React.ReactNode;
@@ -30,7 +26,3 @@ const StudioLayout = async ({ children }: Props) => {
 };
 
 export default StudioLayout;
-
-const SidebarSkeleton = () => {
-  return <div>Skeleton</div>;
-};
