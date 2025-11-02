@@ -24,7 +24,7 @@ export const createCallerFactory = t.createCallerFactory;
 export const baseProcedure = t.procedure;
 
 export const protectedProcedure = baseProcedure.use(async ({ ctx, next }) => {
-  const { userId } = await auth();
+  const { userId} = await auth();
 
   if (!userId) {
     throw new TRPCError({
@@ -36,7 +36,7 @@ export const protectedProcedure = baseProcedure.use(async ({ ctx, next }) => {
   return next({
     ctx: {
       ...ctx,
-      auth: {userId}
+      auth: { userId },
     },
   });
 });
