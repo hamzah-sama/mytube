@@ -8,11 +8,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { VideoThumbnail } from "@/components/video-thumbnail";
 import { DEFAULT_LIMIT } from "@/constant";
 import { useTRPC } from "@/trpc/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Loader2Icon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { format } from "date-fns";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Props {
   userId: string;
@@ -20,9 +24,10 @@ interface Props {
 
 export const StudioVideoList = ({ userId }: Props) => {
   const trpc = useTRPC();
+  const router = useRouter();
 
   // Fetch semua data user
-  const { data } = useSuspenseQuery(
+  const { data, isPending } = useSuspenseQuery(
     trpc.studio.getMany.queryOptions({ userId })
   );
 
@@ -51,12 +56,17 @@ export const StudioVideoList = ({ userId }: Props) => {
   const visibleVideos = data.slice(0, visibleCount);
 
   const isLoadingMore = visibleCount < data.length;
-  return (
-    <div className="py-4 space-y-4">
-      <div className="flex-flex-col gap-1 px-4">
-      <h1 className='text-2xl font-bold'>Channel Content</h1>
-      <p className="text-muted-foreground text-sm">Manage your content and videos</p>
+
+  if (data.length === 0) {
+    return (
+      <div className="flex justify-center items-center py-6">
+        <p className="text-muted-foreground">No videos found in your channel</p>
       </div>
+    );
+  }
+
+  return (
+    <>
       <Table>
         <TableHeader>
           <TableRow className="bg-gray-100/30 border-none">
@@ -71,8 +81,38 @@ export const StudioVideoList = ({ userId }: Props) => {
         </TableHeader>
         <TableBody>
           {visibleVideos.map((video) => (
-            <TableRow key={video.id}>
-              <TableCell className="font-medium">{video.title}</TableCell>
+            <TableRow
+              key={video.id}
+              onClick={() => router.push(`/studio/video/${video.id}`)}
+              className="cursor-pointer"
+            >
+              <TableCell className="pl-6 font-medium w-[750px]">
+                <div className="flex item-center gap-4">
+                  <div className="relative aspect-video w-36 shrink-0">
+                    <VideoThumbnail
+                      thumbnail={video.thumbnailUrl}
+                      preview={video.previewUrl}
+                      duration={video.duration}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <p className="text-sm font-medium line-clamp-1">
+                      {video.title}
+                    </p>
+                    <p className="text-sm text-muted-foreground line-clamp-1">
+                      {video.description || "No description"}
+                    </p>
+                  </div>
+                </div>
+              </TableCell>
+              <TableCell className="capitalize">{video.visibility}</TableCell>
+              <TableCell className="capitalize">{video.muxStatus}</TableCell>
+              <TableCell className="text-sm truncate">
+                {video.createdAt && format(video.createdAt, "dd MMMM yyyy")}
+              </TableCell>
+              <TableCell className="text-right">Views</TableCell>
+              <TableCell className="text-right">Comments</TableCell>
+              <TableCell className="text-right pr-6">Likes</TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -84,6 +124,61 @@ export const StudioVideoList = ({ userId }: Props) => {
           <Loader2Icon className="size-5 animate-spin text-muted-foreground" />
         </div>
       )}
-    </div>
+    </>
+  );
+};
+
+export const StudioVideoListSkeleton = () => {
+  return (
+    <>
+      <Table>
+        <TableHeader>
+          <TableRow className="bg-gray-100/30 border-none">
+            <TableHead className="pl-6 w-[750px]">Video</TableHead>
+            <TableHead>Visibility</TableHead>
+            <TableHead>status</TableHead>
+            <TableHead>Date</TableHead>
+            <TableHead className="text-right">Views</TableHead>
+            <TableHead className="text-right">Comments</TableHead>
+            <TableHead className="text-right pr-6">Likes</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {Array.from({ length: 5 }).map((_, index) => (
+            <TableRow key={index}>
+              <TableCell className="pl-6 w-[750px]">
+                <div className="flex item-center gap-4">
+                  <div className="relative aspect-video w-36">
+                    <Skeleton className="w-full h-full" />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <Skeleton className="w-36 h-5" />
+                    <Skeleton className="w-36 h-3" />
+                  </div>
+                </div>
+              </TableCell>
+              <TableCell>
+                <Skeleton className="w-20 h-5" />
+              </TableCell>
+              <TableCell>
+                <Skeleton className="w-20 h-5" />
+              </TableCell>
+              <TableCell>
+                <Skeleton className="w-20 h-5" />
+              </TableCell>
+              <TableCell className="text-right">
+                <Skeleton className="w-20 h-5" />
+              </TableCell>
+              <TableCell className="text-right">
+                <Skeleton className="w-20 h-5" />
+              </TableCell>
+              <TableCell className="text-right pr-6">
+                <Skeleton className="w-20 h-5" />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </>
   );
 };

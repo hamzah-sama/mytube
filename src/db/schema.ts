@@ -1,4 +1,11 @@
-import { pgTable, uuid, text, timestamp } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  uuid,
+  text,
+  timestamp,
+  integer,
+  pgEnum,
+} from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -18,6 +25,8 @@ export const categories = pgTable("categories", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+export const visibilityVideos = pgEnum("visibility_videos", ["public", "private"]);
+
 export const videos = pgTable("videos", {
   id: uuid("id").defaultRandom().primaryKey(),
   title: text("title").notNull(),
@@ -25,6 +34,16 @@ export const videos = pgTable("videos", {
   categoryId: uuid("category_id").references(() => categories.id, {
     onDelete: "set null",
   }),
+  thumbnailUrl: text("thumbnail_url"),
+  previewUrl: text("preview_url"),
+  duration: integer("duration").notNull().default(0),
+  visibility: visibilityVideos("visibility").notNull().default("public"),
+  muxUploadedId: text("mux_uploaded_id").unique(),
+  muxAssetId: text("mux_asset_id").unique(),
+  muxStatus: text("mux_status"),
+  muxPlaybackId: text("mux_playback_id").unique(),
+  muxtrackId: text("mux_track_id").unique(),
+  muxTrackStatus: text("mux_track_status"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
   userId: uuid("user_id")
