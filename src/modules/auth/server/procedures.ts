@@ -6,11 +6,11 @@ import { eq } from "drizzle-orm";
 
 export const authRouter = createTRPCRouter({
   getUser: protectedProcedure.query(async ({ ctx }) => {
-    const { userId } = ctx.auth;
+    const { clerkUserId } = ctx.auth;
     const [user] = await db
       .select()
       .from(users)
-      .where(eq(users.clerkId, userId));
+      .where(eq(users.clerkId, clerkUserId));
 
     if (!user)
       throw new TRPCError({

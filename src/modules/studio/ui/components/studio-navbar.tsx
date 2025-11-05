@@ -7,9 +7,6 @@ import { CreateVideoButton } from "./create-video-button";
 import { getUserId } from "@/lib/get-user";
 
 export const StudioNavbar = async () => {
-  const userId = await getUserId();
-  if (!userId) return null;
-
   return (
     <nav className="fixed top-0 right-0 left-0 w-full flex items-center h-16 px-4 pr-10 bg-background z-50 border-b shadow-sm">
       <div className="flex items-center w-full gap-4">
@@ -27,7 +24,7 @@ export const StudioNavbar = async () => {
 
         <div className="flex items-center gap-4 shrink-0">
           <ThemeToggle />
-          <CreateVideoButton userId={userId} />
+          <CreateVideoButton/>
           <AuthButton />
         </div>
       </div>

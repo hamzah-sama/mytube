@@ -1,5 +1,8 @@
+import { db } from "@/db";
+import { users } from "@/db/schema";
 import { auth } from "@clerk/nextjs/server";
 import { initTRPC, TRPCError } from "@trpc/server";
+import { eq } from "drizzle-orm";
 import { cache } from "react";
 import superjson from "superjson";
 export const createTRPCContext = cache(async () => {
@@ -24,19 +27,31 @@ export const createCallerFactory = t.createCallerFactory;
 export const baseProcedure = t.procedure;
 
 export const protectedProcedure = baseProcedure.use(async ({ ctx, next }) => {
-  const { userId} = await auth();
+  const { userId: clerkUserId } = await auth();
 
-  if (!userId) {
+  if (!clerkUserId) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
       message: "You must be signed in to do this.",
     });
   }
 
+  const [userId] = await db
+    .select({ id: users.id })
+    .from(users)
+    .where(eq(users.clerkId, clerkUserId));
+
+  if (!userId.id) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "User record not found",
+    });
+  }
+
   return next({
     ctx: {
       ...ctx,
-      auth: { userId },
+      auth: { clerkUserId, userId: userId.id },
     },
   });
 });
