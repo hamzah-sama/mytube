@@ -7,12 +7,13 @@ import z from "zod";
 
 export const videoRouter = createTRPCRouter({
   create: protectedProcedure
-    .input(z.object({ title: z.string(), userId: z.string() }))
-    .mutation(async ({ input }) => {
+    .input(z.object({ title: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const { userId } = ctx.auth;
       try {
         const upload = await mux.video.uploads.create({
           new_asset_settings: {
-            passthrough: input.userId,
+            passthrough: userId,
             playback_policies: ["public"],
           },
           cors_origin: "*",
@@ -21,7 +22,7 @@ export const videoRouter = createTRPCRouter({
           .insert(videos)
           .values({
             title: input.title,
-            userId: input.userId,
+            userId,
             muxUploadedId: upload.id,
             muxStatus: upload.status,
           })

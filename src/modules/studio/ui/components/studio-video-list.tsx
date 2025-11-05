@@ -18,18 +18,12 @@ import { useEffect, useRef, useState } from "react";
 import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
 
-interface Props {
-  userId: string;
-}
-
-export const StudioVideoList = ({ userId }: Props) => {
+export const StudioVideoList = () => {
   const trpc = useTRPC();
   const router = useRouter();
 
   // Fetch semua data user
-  const { data, isPending } = useSuspenseQuery(
-    trpc.studio.getMany.queryOptions({ userId })
-  );
+  const { data } = useSuspenseQuery(trpc.studio.getMany.queryOptions());
 
   const [visibleCount, setVisibleCount] = useState(DEFAULT_LIMIT);
   const loaderRef = useRef<HTMLDivElement | null>(null);
@@ -87,7 +81,7 @@ export const StudioVideoList = ({ userId }: Props) => {
               className="cursor-pointer"
             >
               <TableCell className="pl-6 font-medium w-[750px]">
-                <div className="flex item-center gap-4">
+                <div className="flex gap-4">
                   <div className="relative aspect-video w-36 shrink-0">
                     <VideoThumbnail
                       thumbnail={video.thumbnailUrl}

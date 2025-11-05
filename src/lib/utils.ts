@@ -6,10 +6,10 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatDuration(duration: number) {
-  console.log(duration)
-  const hours = Math.floor(duration / 3600);
-  const minutes = Math.floor(duration / 60);
-  const seconds = duration % 60;
+  const totalSeconds = Math.max(Math.floor(duration), 0);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
   return `${hours ? `${hours.toString().padStart(2, "0")}:` : ""}${minutes
     .toString()
     .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;

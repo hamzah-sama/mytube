@@ -29,16 +29,20 @@ export const POST = async (req: Request) => {
   if (!muxSignature)
     throw new Response("Missing Mux-Signature", { status: 400 });
 
-  const payload = await req.json();
-  const body = JSON.stringify(payload);
+  const rawBody = await req.text();
 
-  mux.webhooks.verifySignature(
-    body,
-    {
-      "mux-signature": muxSignature,
-    },
-    SIGNING_SECRET
-  );
+  try {
+    mux.webhooks.verifySignature(
+      rawBody,
+      {
+        "mux-signature": muxSignature,
+      },
+      SIGNING_SECRET
+    );
+  } catch {
+    return new Response("Invalid signature", { status: 400 });
+  }
+  const payload = JSON.parse(rawBody);
 
   switch (payload.type as WeebhokEvent["type"]) {
     case "video.asset.created": {
@@ -50,7 +54,7 @@ export const POST = async (req: Request) => {
       await db
         .update(videos)
         .set({
-          muxAssetId: data.upload_id,
+          muxAssetId: data.id,
           muxStatus: data.status,
         })
         .where(eq(videos.muxUploadedId, data.upload_id));

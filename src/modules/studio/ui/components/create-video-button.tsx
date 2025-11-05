@@ -8,10 +8,7 @@ import { Loader2Icon, Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-interface Props {
-  userId: string;
-}
-export const CreateVideoButton = ({ userId }: Props) => {
+export const CreateVideoButton = () => {
   const [openModal, setOpenModal] = useState(false);
   const queryClient = useQueryClient();
   const trpc = useTRPC();
@@ -20,9 +17,7 @@ export const CreateVideoButton = ({ userId }: Props) => {
       onSuccess: () => {
         toast.success("Video created");
         setOpenModal(true);
-        queryClient.invalidateQueries(
-          trpc.studio.getMany.queryOptions({ userId })
-        );
+        queryClient.invalidateQueries(trpc.studio.getMany.queryOptions());
       },
       onError: (err) => {
         toast.error(err.message);
@@ -33,12 +28,16 @@ export const CreateVideoButton = ({ userId }: Props) => {
   console.log(createVideo.data);
   return (
     <>
-      <UploadModal url={createVideo.data?.url} open={openModal} onOpenChange={setOpenModal} />
+      <UploadModal
+        url={createVideo.data?.url}
+        open={openModal}
+        onOpenChange={setOpenModal}
+      />
       <Button
         variant="secondary"
         className="text-base font-medium"
         disabled={createVideo.isPending}
-        onClick={() => createVideo.mutate({ userId, title: "new video" })}
+        onClick={() => createVideo.mutate({ title: "new video" })}
       >
         {createVideo.isPending ? (
           <Loader2Icon className="size-4 animate-spin" />

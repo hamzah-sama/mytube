@@ -25,7 +25,7 @@ export const VideoThumbnail = ({ thumbnail, preview, duration }: Props) => {
       </div>
       <div className="absolute bottom-2 right-2 bg-black text-white px-1 py-0.5 rounded-md">
         <span className="text-xs">
-          {duration ? formatDuration(duration) : 0}
+          {duration == null ? "--:--" : formatDuration(duration)}
         </span>
       </div>
     </div>
