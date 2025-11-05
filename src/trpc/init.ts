@@ -41,6 +41,13 @@ export const protectedProcedure = baseProcedure.use(async ({ ctx, next }) => {
     .from(users)
     .where(eq(users.clerkId, clerkUserId));
 
+  if (!userId.id) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "User record not found",
+    });
+  }
+
   return next({
     ctx: {
       ...ctx,

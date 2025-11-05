@@ -15,9 +15,9 @@ export const CreateVideoButton = () => {
   const createVideo = useMutation(
     trpc.video.create.mutationOptions({
       onSuccess: () => {
+        queryClient.invalidateQueries(trpc.studio.getMany.queryOptions());
         toast.success("Video created");
         setOpenModal(true);
-        queryClient.invalidateQueries(trpc.studio.getMany.queryOptions());
       },
       onError: (err) => {
         toast.error(err.message);
