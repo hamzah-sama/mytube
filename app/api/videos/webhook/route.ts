@@ -84,7 +84,7 @@ export const POST = async (req: Request) => {
 
       if (existingVideo?.previewUrl && existingVideo?.thumbnailUrl) {
         return new Response("Files Already exists in uploadthing", {
-          status: 400,
+          status: 200,
         });
       }
 

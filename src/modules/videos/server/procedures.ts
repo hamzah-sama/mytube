@@ -70,6 +70,12 @@ export const videoRouter = createTRPCRouter({
         .from(videos)
         .where(and(eq(videos.id, videoId), eq(videos.userId, userId)));
 
+      if (!video)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Video not found",
+        });
+
       if (video.previewKey && video.thumbnailKey) {
         try {
           await utApi.deleteFiles([video.previewKey, video.thumbnailKey]);
@@ -80,9 +86,9 @@ export const videoRouter = createTRPCRouter({
 
       if (video.muxAssetId) {
         try {
-          await utApi.deleteFiles([video.muxAssetId]);
+          await mux.video.assets.delete(video.muxAssetId);
         } catch (error) {
-          console.error("Error deleting files on mux: ", error);
+          console.error("Error deleting asset on mux: ", error);
         }
       }
 
@@ -112,8 +118,14 @@ export const videoRouter = createTRPCRouter({
           description: input.description,
           visibility: input.visibility,
         })
-        .where(eq(videos.id, input.id))
+        .where(and(eq(videos.id, input.id), eq(videos.userId, userId)))
         .returning();
+
+      if (!data)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Video not found",
+        });
       return data;
     }),
 
@@ -152,6 +164,12 @@ export const videoRouter = createTRPCRouter({
         })
         .from(videos)
         .where(and(eq(videos.id, input.videoId), eq(videos.userId, userId)));
+
+      if (!video)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Video not found",
+        });
 
       if (video.thumbnailKey) {
         try {

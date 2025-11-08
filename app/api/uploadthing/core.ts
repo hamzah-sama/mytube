@@ -45,11 +45,13 @@ export const ourFileRouter = {
           )
         );
 
-      if (!existingVideo.thumbnailKey) {
-        throw new UploadThingError("key is not found");
+      if (!existingVideo) {
+        throw new UploadThingError("video is not found");
       }
 
-      await utApi.deleteFiles(existingVideo.thumbnailKey);
+      if (existingVideo.thumbnailKey) {
+        await utApi.deleteFiles(existingVideo.thumbnailKey);
+      }
 
       await db
         .update(videos)
@@ -57,7 +59,12 @@ export const ourFileRouter = {
           thumbnailUrl: file.ufsUrl,
           thumbnailKey: file.key,
         })
-        .where(eq(videos.id, metadata.videoId))
+        .where(
+          and(
+            eq(videos.id, metadata.videoId),
+            eq(videos.userId, metadata.user.id)
+          )
+        )
         .returning();
 
       return { uploadedBy: metadata.user.id };
