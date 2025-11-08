@@ -7,6 +7,8 @@ import {
   pgEnum,
 } from "drizzle-orm/pg-core";
 
+import { createUpdateSchema } from "drizzle-zod";
+
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
   clerkId: text("clerk_id").notNull().unique(),
@@ -25,7 +27,10 @@ export const categories = pgTable("categories", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const visibilityVideos = pgEnum("visibility_videos", ["public", "private"]);
+export const visibilityVideos = pgEnum("visibility_videos", [
+  "public",
+  "private",
+]);
 
 export const videos = pgTable("videos", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -34,8 +39,10 @@ export const videos = pgTable("videos", {
   categoryId: uuid("category_id").references(() => categories.id, {
     onDelete: "set null",
   }),
+  thumbnailKey: text("thumbnail_key").unique(),
   thumbnailUrl: text("thumbnail_url"),
   previewUrl: text("preview_url"),
+  previewKey: text("preview_key"),
   duration: integer("duration").notNull().default(0),
   visibility: visibilityVideos("visibility").notNull().default("public"),
   muxUploadedId: text("mux_uploaded_id").unique(),
@@ -50,3 +57,5 @@ export const videos = pgTable("videos", {
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
 });
+
+export const videoUpdateSchema = createUpdateSchema(videos);

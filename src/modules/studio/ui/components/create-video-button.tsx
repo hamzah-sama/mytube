@@ -3,12 +3,15 @@
 import { Button } from "@/components/ui/button";
 import { UploadModal } from "@/components/upload-modal";
 import { useTRPC } from "@/trpc/client";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import MuxUploader from "@mux/mux-uploader-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, Plus } from "lucide-react";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export const CreateVideoButton = () => {
+  const router = useRouter();
   const [openModal, setOpenModal] = useState(false);
   const queryClient = useQueryClient();
   const trpc = useTRPC();
@@ -25,14 +28,31 @@ export const CreateVideoButton = () => {
     })
   );
 
-  console.log(createVideo.data);
+  const { data: statusData } = useQuery(
+    trpc.video.getStatus.queryOptions(
+      {
+        videoId: createVideo.data?.video.id || "",
+      },
+
+      {
+        enabled: !!createVideo.data?.video.id,
+        refetchInterval: 3000,
+      }
+    )
+  );
+
+  useEffect(() => {
+    if (statusData?.status === "ready") {
+      setOpenModal(false);
+      router.push(`/studio/video/${createVideo.data?.video.id}`);
+    }
+  }, [createVideo.data?.video.id, statusData?.status]);
+
   return (
     <>
-      <UploadModal
-        url={createVideo.data?.url}
-        open={openModal}
-        onOpenChange={setOpenModal}
-      />
+      <UploadModal open={openModal} onOpenChange={setOpenModal} title="Upload your video">
+        <MuxUploader endpoint={createVideo.data?.url} />
+      </UploadModal>
       <Button
         variant="secondary"
         className="text-base font-medium"

@@ -12,17 +12,17 @@ import { VideoThumbnail } from "@/components/video-thumbnail";
 import { DEFAULT_LIMIT } from "@/constant";
 import { useTRPC } from "@/trpc/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Loader2Icon } from "lucide-react";
+import { GlobeIcon, Loader2Icon, LockIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Hint } from "@/components/hint";
 
 export const StudioVideoList = () => {
   const trpc = useTRPC();
   const router = useRouter();
 
-  // Fetch semua data user
   const { data } = useSuspenseQuery(trpc.studio.getMany.queryOptions());
 
   const [visibleCount, setVisibleCount] = useState(DEFAULT_LIMIT);
@@ -89,20 +89,31 @@ export const StudioVideoList = () => {
                       duration={video.duration}
                     />
                   </div>
-                  <div className="flex flex-col gap-1">
+                  <div className="flex flex-col gap-1 max-w-[400px]">
                     <p className="text-sm font-medium line-clamp-1">
                       {video.title}
                     </p>
-                    <p className="text-sm text-muted-foreground line-clamp-1">
-                      {video.description || "No description"}
-                    </p>
+                    <Hint text={video.description || ""} side="right">
+                      <p className="text-sm text-muted-foreground truncate">
+                        {video.description || "No description"}
+                      </p>
+                    </Hint>
                   </div>
                 </div>
               </TableCell>
-              <TableCell className="capitalize">{video.visibility}</TableCell>
+              <TableCell className="capitalize">
+                <p className="flex items-center w-full">
+                  {video.visibility === "private" ? (
+                    <LockIcon className="size-4 mr-2" />
+                  ) : (
+                    <GlobeIcon className="size-4 mr-2" />
+                  )}
+                  {video.visibility}
+                </p>
+              </TableCell>
               <TableCell className="capitalize">{video.muxStatus}</TableCell>
               <TableCell className="text-sm truncate">
-                {video.createdAt && format(video.createdAt, "dd MMMM yyyy")}
+                {video.createdAt && format(video.createdAt, "dd MMM yyyy")}
               </TableCell>
               <TableCell className="text-right">Views</TableCell>
               <TableCell className="text-right">Comments</TableCell>
