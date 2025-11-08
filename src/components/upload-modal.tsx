@@ -3,27 +3,16 @@
 import { useIsMobile } from "@/hooks/use-mobile";
 import MuxUploader from "@mux/mux-uploader-react";
 
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "./ui/drawer";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "./ui/dialog";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "./ui/drawer";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 
 interface Props {
-  url: string | undefined;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  children: React.ReactNode;
+  title: string;
 }
-export const UploadModal = ({ open, url, onOpenChange }: Props) => {
+export const UploadModal = ({ open, onOpenChange, children, title }: Props) => {
   const isMobile = useIsMobile();
 
   if (isMobile) {
@@ -31,9 +20,9 @@ export const UploadModal = ({ open, url, onOpenChange }: Props) => {
       <Drawer open={open} onOpenChange={onOpenChange}>
         <DrawerContent>
           <DrawerHeader className="flex justify-center items-center pt-4">
-            <DrawerTitle className="hidden">Upload your video</DrawerTitle>
+            <DrawerTitle>{title}</DrawerTitle>
           </DrawerHeader>
-          <MuxUploader endpoint={url} />
+          {children}
         </DrawerContent>
       </Drawer>
     );
@@ -43,9 +32,9 @@ export const UploadModal = ({ open, url, onOpenChange }: Props) => {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader className="flex justify-center items-center pt-4">
-          <DialogTitle className="hidden">Upload your video</DialogTitle>
+          <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
-        <MuxUploader endpoint={url} />
+        {children}
       </DialogContent>
     </Dialog>
   );
