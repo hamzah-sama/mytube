@@ -29,7 +29,7 @@ export const { POST } = serve(async (context) => {
 - Aim for a summary that is 3-5 sentences long and no more than 200 characters.`;
 
   const transcript = await context.run("get-transcript", async () => {
-    const trackUrl = `https://stream.mux.com/${video.muxPlaybackId}/text/${video.muxtrackId}.txt`;
+    const trackUrl = `https://stream.mux.com/${video.muxPlaybackId}/text/${video.muxtrackId}.vtt`;
     const response = await fetch(trackUrl);
     const text = await response.text();
     return text;
@@ -59,7 +59,7 @@ export const { POST } = serve(async (context) => {
 
   const [updatedVideo] = await db
     .update(videos)
-    .set({ description, workflowTitleStatus: "success" })
+    .set({ description, workflowDescriptionStatus: "success" })
     .where(and(eq(videos.id, videoId), eq(videos.userId, userId)))
     .returning();
 

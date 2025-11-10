@@ -1,3 +1,6 @@
+"use client"
+
+
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "./ui/drawer";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";

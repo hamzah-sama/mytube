@@ -56,7 +56,7 @@ export const videos = pgTable("videos", {
   muxtrackId: text("mux_track_id").unique(),
   muxTrackStatus: text("mux_track_status"),
   workflowThumbnailStatus: workflowStatus("workflow_thumbnail_status"),
-  workflowTitleStatus: workflowStatus("workflow_tItle_status"),
+  workflowTitleStatus: workflowStatus("workflow_title_status"),
   workflowDescriptionStatus: workflowStatus("workflow_description_status"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),

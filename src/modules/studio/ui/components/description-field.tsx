@@ -39,7 +39,7 @@ export const DescriptionField = ({ control, videoId, value }: Props) => {
   );
 
   const { data: description } = useQuery(
-    trpc.video.getTitleWorkFlow.queryOptions(
+    trpc.video.getDescriptionWorkFlow.queryOptions(
       { videoId },
       {
         enabled: isgenerateDescription,

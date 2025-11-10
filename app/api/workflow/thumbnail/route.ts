@@ -41,7 +41,7 @@ export const { POST } = serve(async (context) => {
     }
   );
 
-  const tempImageUrl = body.data[0].url;
+  const tempImageUrl = body?.data[0]?.url;
   if (!tempImageUrl) throw new Error("Failed to generate thumbnail");
 
   await context.run("remove-current-image", async () => {

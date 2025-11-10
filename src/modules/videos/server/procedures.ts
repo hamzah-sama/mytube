@@ -327,7 +327,7 @@ export const videoRouter = createTRPCRouter({
       await db
         .update(videos)
         .set({
-          workflowTitleStatus: "processing",
+          workflowDescriptionStatus: "processing",
         })
         .where(and(eq(videos.id, input.videoId), eq(videos.userId, userId)));
 

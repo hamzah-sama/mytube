@@ -30,7 +30,7 @@ export const { POST } = serve(async (context) => {
 - ONLY return the title as plain text. Do not add quotes or any additional formatting.`;
 
   const transcript = await context.run("get-transcript", async () => {
-    const trackUrl = `https://stream.mux.com/${video.muxPlaybackId}/text/${video.muxtrackId}.txt`;
+    const trackUrl = `https://stream.mux.com/${video.muxPlaybackId}/text/${video.muxtrackId}.vtt`;
     const response = await fetch(trackUrl);
     const text = await response.text();
     return text;
