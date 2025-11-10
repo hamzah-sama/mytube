@@ -6,6 +6,8 @@ import { TRPCError } from "@trpc/server";
 import { and, eq } from "drizzle-orm";
 import { UTApi } from "uploadthing/server";
 import z from "zod";
+import { Client } from "@upstash/workflow";
+import { get } from "http";
 
 const utApi = new UTApi();
 
@@ -19,6 +21,16 @@ export const videoRouter = createTRPCRouter({
           new_asset_settings: {
             passthrough: userId,
             playback_policies: ["public"],
+            inputs: [
+              {
+                generated_subtitles: [
+                  {
+                    language_code: "en",
+                    name: "English",
+                  },
+                ],
+              },
+            ],
           },
           cors_origin: "*",
         });
@@ -206,5 +218,138 @@ export const videoRouter = createTRPCRouter({
         })
         .where(eq(videos.id, input.videoId))
         .returning();
+    }),
+
+  generateThumbnail: protectedProcedure
+    .input(
+      z.object({
+        videoId: z.string(),
+        prompt: z.string().min(1, { message: "prompt is required" }),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const client = new Client({ token: process.env.QSTASH_TOKEN! });
+
+      const { userId } = ctx.auth;
+
+      const { workflowRunId } = await client.trigger({
+        url: `http://localhost:3000/api/workflow/thumbnail`,
+        retries: 3,
+        keepTriggerConfig: true,
+        body: { userId, videoId: input.videoId, prompt: input.prompt },
+      });
+
+      await db
+        .update(videos)
+        .set({
+          workflowThumbnailStatus: "processing",
+        })
+        .where(and(eq(videos.id, input.videoId), eq(videos.userId, userId)));
+
+      return workflowRunId;
+    }),
+
+  getThumbnailWorkFlow: protectedProcedure
+    .input(z.object({ videoId: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const { userId } = ctx.auth;
+      const [result] = await db
+        .select({ status: videos.workflowThumbnailStatus })
+        .from(videos)
+        .where(and(eq(videos.id, input.videoId), eq(videos.userId, userId)));
+
+      if (!result)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Video not found",
+        });
+
+      if (!result.status) return;
+      return result;
+    }),
+
+  generateTitle: protectedProcedure
+    .input(z.object({ videoId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { userId } = ctx.auth;
+
+      const client = new Client({ token: process.env.QSTASH_TOKEN! });
+
+      const { workflowRunId } = await client.trigger({
+        url: `http://localhost:3000/api/workflow/title`,
+        retries: 3,
+        keepTriggerConfig: true,
+        body: { userId, videoId: input.videoId },
+      });
+
+      await db
+        .update(videos)
+        .set({
+          workflowTitleStatus: "processing",
+        })
+        .where(and(eq(videos.id, input.videoId), eq(videos.userId, userId)));
+
+      return workflowRunId;
+    }),
+
+  getTitleWorkFlow: protectedProcedure
+    .input(z.object({ videoId: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const { userId } = ctx.auth;
+      const [result] = await db
+        .select({ status: videos.workflowTitleStatus })
+        .from(videos)
+        .where(and(eq(videos.id, input.videoId), eq(videos.userId, userId)));
+
+      if (!result)
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Something went wrong when generate title",
+        });
+
+      if (!result.status) return;
+      return result;
+    }),
+  generateDescription: protectedProcedure
+    .input(z.object({ videoId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { userId } = ctx.auth;
+
+      const client = new Client({ token: process.env.QSTASH_TOKEN! });
+
+      const { workflowRunId } = await client.trigger({
+        url: `http://localhost:3000/api/workflow/description`,
+        retries: 3,
+        keepTriggerConfig: true,
+        body: { userId, videoId: input.videoId },
+      });
+
+      await db
+        .update(videos)
+        .set({
+          workflowTitleStatus: "processing",
+        })
+        .where(and(eq(videos.id, input.videoId), eq(videos.userId, userId)));
+
+      return workflowRunId;
+    }),
+
+  getDescriptionWorkFlow: protectedProcedure
+    .input(z.object({ videoId: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const { userId } = ctx.auth;
+      const [result] = await db
+        .select({ status: videos.workflowDescriptionStatus })
+        .from(videos)
+        .where(and(eq(videos.id, input.videoId), eq(videos.userId, userId)));
+
+      if (!result)
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Something went wrong when generate description",
+        });
+
+      if (!result.status) return;
+      return result;
     }),
 });

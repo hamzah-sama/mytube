@@ -90,7 +90,7 @@ export const StudioVideoList = () => {
                     />
                   </div>
                   <div className="flex flex-col gap-1 max-w-[400px]">
-                    <p className="text-sm font-medium line-clamp-1">
+                    <p className="text-sm truncate">
                       {video.title}
                     </p>
                     <Hint text={video.description || ""} side="right">
