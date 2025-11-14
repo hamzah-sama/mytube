@@ -8,6 +8,7 @@ import { UTApi } from "uploadthing/server";
 import z from "zod";
 import { Client } from "@upstash/workflow";
 import { get } from "http";
+import { th } from "zod/v4/locales";
 
 const utApi = new UTApi();
 
@@ -317,8 +318,15 @@ export const videoRouter = createTRPCRouter({
 
       const client = new Client({ token: process.env.QSTASH_TOKEN! });
 
+      const baseUrl = process.env.WORKFLOW_BASE_URL;
+      if (!baseUrl)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Workflow base url is not defined",
+        });
+
       const { workflowRunId } = await client.trigger({
-        url: `http://localhost:3000/api/workflow/description`,
+        url: `${baseUrl}/api/workflow/description`,
         retries: 3,
         keepTriggerConfig: true,
         body: { userId, videoId: input.videoId },
