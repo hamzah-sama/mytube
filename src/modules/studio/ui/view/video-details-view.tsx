@@ -25,10 +25,11 @@ import {
 import {
   CopyCheckIcon,
   CopyIcon,
-  Globe2Icon,
   GlobeIcon,
   LockIcon,
   MoreVerticalIcon,
+  SparkleIcon,
+  SparklesIcon,
   Trash2Icon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -53,6 +54,11 @@ import MuxPlayer from "@mux/mux-player-react";
 import Link from "next/link";
 import { Hint } from "@/components/hint";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ResponsiveModal } from "@/components/responsiveModal";
+import { GenerateThumbnailModal } from "../components/generate-thumbnail";
+import { Title } from "@radix-ui/react-dialog";
+import { TitleField } from "../components/title-field";
+import { DescriptionField } from "../components/description-field";
 
 interface Props {
   videoId: string;
@@ -61,6 +67,9 @@ interface Props {
 export const VideoDetailsView = ({ videoId }: Props) => {
   const [openModal, setOpenModal] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const [openGenerateThumbnail, setOpenGenerateThumbnail] = useState(false);
+  const [isGeneratingThumbnail, setIsGeneratingThumbnail] = useState(false);
+
   const router = useRouter();
   const queryClient = useQueryClient();
   const trpc = useTRPC();
@@ -131,6 +140,17 @@ export const VideoDetailsView = ({ videoId }: Props) => {
         isLoading={handleDelete.isPending}
       />
 
+      <ResponsiveModal
+        title="Generate thumbnail"
+        open={openGenerateThumbnail}
+        onOpenChange={setOpenGenerateThumbnail}
+      >
+        <GenerateThumbnailModal
+          videoId={videoId}
+          setOpenGenerateThumbnail={setOpenGenerateThumbnail}
+          setIsGeneratingThumbnail={setIsGeneratingThumbnail}
+        />
+      </ResponsiveModal>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="max-w-[1400px] px-4 pt-2.5">
@@ -172,55 +192,21 @@ export const VideoDetailsView = ({ videoId }: Props) => {
 
             <div className="grid grid-cols-1 lg:grid-cols-5 mt-5 space-x-5">
               <div className="col-span-3 flex flex-col space-y-10">
-                <FormField
-                  name="title"
-                  control={form.control}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Title</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="Add a title to your video"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  name="description"
-                  control={form.control}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Description</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          {...field}
-                          placeholder="Add description to your video"
-                          style={{ height: "auto" }}
-                          value={field.value ?? ""}
-                          className="resize-none min-h-[100px] max-h-[100px] overflow-y-auto"
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  name="thumbnailUrl"
-                  control={form.control}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Thumbnail</FormLabel>
-                      <ThumbnailControl
-                        thumbnailUrl={video.thumbnailUrl ?? fallbackThumbnail}
-                        previewUrl={video.previewUrl ?? fallbackThumbnail}
-                        imageAlt={video.title ?? "thumbnail"}
-                        videoId={video.id}
-                      />
-                    </FormItem>
-                  )}
-                />
+                <TitleField control={form.control} videoId={videoId} value={video.title ?? ""}/>
+                <DescriptionField control={form.control} videoId={videoId} value={video.description ?? ""}/>
+                <div className="flex flex-col gap-2">
+                  <p>Thumbnail</p>
+                  <ThumbnailControl
+                    thumbnailUrl={video.thumbnailUrl ?? fallbackThumbnail}
+                    previewUrl={video.previewUrl ?? fallbackThumbnail}
+                    imageAlt={video.title ?? "thumbnail"}
+                    videoId={video.id}
+                    workflowThumbnailStatus={video.workflowThumbnailStatus}
+                    setOPenGenerateThumbnail={setOpenGenerateThumbnail}
+                    isGeneratingThumbnail={isGeneratingThumbnail}
+                    setIsGeneratingThumbnail={setIsGeneratingThumbnail}
+                  />
+                </div>
                 <FormField
                   name="categoryId"
                   control={form.control}

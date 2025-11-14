@@ -4,7 +4,6 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { AuthButton } from "@/components/auth-button";
 import { ThemeToggle } from "@/components/theme/themeToggle";
 import { CreateVideoButton } from "./create-video-button";
-import { getUserId } from "@/lib/get-user";
 
 export const StudioNavbar = async () => {
   return (
@@ -12,7 +11,7 @@ export const StudioNavbar = async () => {
       <div className="flex items-center w-full gap-4">
         <div className="flex items-center shrink-0 ">
           <SidebarTrigger />
-          <Link href="/" className="flex items-center gap-1 p-4">
+          <Link href="/studio" className="flex items-center gap-1 p-4">
             <Image src="/logo.svg" alt="Logo" width={32} height={32} />
             <span className="text-xl font-bold tracking-tight -translate-y-0.5">
               Studio

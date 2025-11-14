@@ -146,7 +146,9 @@ export const POST = async (req: Request) => {
       }
 
       if (!existingVideo.previewKey || !existingVideo.thumbnailKey) {
-        throw new Response("Missing previewKey or thumbnailKey", { status: 404 });
+        throw new Response("Missing previewKey or thumbnailKey", {
+          status: 404,
+        });
       }
 
       await utApi.deleteFiles([
@@ -155,6 +157,24 @@ export const POST = async (req: Request) => {
       ]);
 
       await db.delete(videos).where(eq(videos.muxUploadedId, data.upload_id));
+      break;
+    }
+
+    case "video.asset.track.ready": {
+      const data = payload.data as VideoAssetTrackReadyWebhookEvent["data"] & {
+        asset_id: string;
+      };
+
+      if(!data.asset_id) {
+        throw new Response("Missing asset_id", { status: 400 });
+      }
+      await db
+        .update(videos)
+        .set({
+          muxtrackId: data.id,
+          muxTrackStatus: data.status,
+        })
+        .where(eq(videos.muxAssetId, data.asset_id));
       break;
     }
   }
