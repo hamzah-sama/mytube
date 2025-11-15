@@ -5,7 +5,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { AuthButton } from "@/components/auth-button";
 import { ThemeToggle } from "@/components/theme/themeToggle";
 
-export const HomeNavbar = () => {
+export const LayoutNavbar = () => {
   return (
     <nav className="fixed top-0 right-0 left-0 w-full flex items-center h-16 px-4 pr-5 bg-background z-50">
       <div className="flex items-center w-full gap-4">
