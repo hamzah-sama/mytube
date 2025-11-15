@@ -56,7 +56,7 @@ const PersonalItems = [
   },
 ];
 
-export const HomeSidebar = () => {
+export const LayoutSidebar = () => {
   return (
     <Sidebar collapsible="icon" className="pt-16 z-40 border-none">
       <SidebarContent className="bg-background">

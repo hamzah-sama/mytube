@@ -30,7 +30,7 @@ interface Props {
   setIsGeneratingThumbnail: (isGeneratingThumbnail: boolean) => void;
   workflowThumbnailStatus?: "processing" | "success" | null;
 }
-export const ThumbnailControl = ({
+export const ThumbnailField = ({
   thumbnailUrl,
   previewUrl,
   imageAlt,
@@ -101,75 +101,79 @@ export const ThumbnailControl = ({
           />
         </div>
       </UploadModal>
-      <div
-        className={cn(
-          "relative w-[200px] aspect-video group",
-          restoreThumbnail.isPending && "opacity-10"
-        )}
-      >
-        <Image
-          src={thumbnailUrl}
-          alt={imageAlt}
-          fill
+      <div className="flex flex-col gap-2">
+        <p>Thumbnail</p>
+        <div
           className={cn(
-            "object-cover rounded-md opacity-100 group-hover:opacity-0",
-            isGeneratingThumbnail && "opacity-20 group-hover:opacity-20"
+            "relative w-[200px] aspect-video group",
+            restoreThumbnail.isPending && "opacity-10"
           )}
-        />
-        <Image
-          src={previewUrl}
-          alt={imageAlt}
-          fill
-          className={cn(
-            "object-cover rounded-md opacity-0 group-hover:opacity-100",
-            isGeneratingThumbnail && "opacity-0 group-hover:opacity-0"
-          )}
-        />
-        {isGeneratingThumbnail && (
-          <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
-            <LoaderIcon className="size-4 animate-spin" />
-          </div>
-        )}
-        <DropdownMenu
-          open={openEditThumbnail}
-          onOpenChange={setOPenEditThumbnail}
         >
-          <DropdownMenuTrigger asChild>
-            <button
-              disabled={isGeneratingThumbnail}
-              className={cn(
-                "hover:bg-black/50 group-hover:opacity-100 bg-black/50 absolute top-1 right-1 text-white px-1 py-0.5 rounded-md lg:opacity-0",
-                isGeneratingThumbnail && "opacity-0 group-hover:opacity-0"
-              )}
-            >
-              <MoreVerticalIcon className="size-4" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            side="right"
-            align="start"
-            onMouseEnter={() => setOPenEditThumbnail(true)}
-            onMouseLeave={() => setOPenEditThumbnail(false)}
+          <Image
+            src={thumbnailUrl}
+            alt={imageAlt}
+            fill
+            className={cn(
+              "object-cover rounded-md opacity-100 group-hover:opacity-0",
+              isGeneratingThumbnail && "opacity-20 group-hover:opacity-20"
+            )}
+          />
+          <Image
+            src={previewUrl}
+            alt={imageAlt}
+            fill
+            className={cn(
+              "object-cover rounded-md opacity-0 group-hover:opacity-100",
+              isGeneratingThumbnail && "opacity-0 group-hover:opacity-0"
+            )}
+          />
+          {isGeneratingThumbnail && (
+            <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
+              <LoaderIcon className="size-4 animate-spin" />
+            </div>
+          )}
+          <DropdownMenu
+            open={openEditThumbnail}
+            onOpenChange={setOPenEditThumbnail}
           >
-            <DropdownMenuItem onClick={() => setOpenUploadModal(true)}>
-              <ImageIcon className="size-4 mr-2" />
-              Change image
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => restoreThumbnail.mutate({ videoId })}
-              className={cn(
-                restoreThumbnail.isPending && "cursor-not-allowed bg-opacity-50"
-              )}
+            <DropdownMenuTrigger asChild>
+              <button
+                disabled={isGeneratingThumbnail}
+                className={cn(
+                  "hover:bg-black/50 group-hover:opacity-100 bg-black/50 absolute top-1 right-1 text-white px-1 py-0.5 rounded-md lg:opacity-0",
+                  isGeneratingThumbnail && "opacity-0 group-hover:opacity-0"
+                )}
+              >
+                <MoreVerticalIcon className="size-4" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              side="right"
+              align="start"
+              onMouseEnter={() => setOPenEditThumbnail(true)}
+              onMouseLeave={() => setOPenEditThumbnail(false)}
             >
-              <RotateCcwIcon className="size-4 mr-2" />
-              Restore
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setOPenGenerateThumbnail(true)}>
-              <SparklesIcon className="size-4 mr-2" />
-              AI-generate
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+              <DropdownMenuItem onClick={() => setOpenUploadModal(true)}>
+                <ImageIcon className="size-4 mr-2" />
+                Change image
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => restoreThumbnail.mutate({ videoId })}
+                className={cn(
+                  restoreThumbnail.isPending &&
+                    "cursor-not-allowed bg-opacity-50"
+                )}
+              >
+                <RotateCcwIcon className="size-4 mr-2" />
+                Restore
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setOPenGenerateThumbnail(true)}>
+                <SparklesIcon className="size-4 mr-2" />
+                AI-generate
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
     </>
   );
