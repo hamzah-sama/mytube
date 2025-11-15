@@ -3,7 +3,7 @@ import { videoDetailsType } from "@/type";
 import { useAuth } from "@clerk/nextjs";
 import { useState } from "react";
 import Link from "next/link";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTRPC } from "@/trpc/client";
 
 interface Props {
@@ -22,12 +22,22 @@ export const SubscribeButton = ({ video }: Props) => {
             videoPlaybackId: video.muxPlaybackId!,
           })
         );
+
+        queryClient.invalidateQueries(
+          trpc.subscriberCount.isSubscribed.queryOptions({
+            videoId: video.id,
+          })
+        );
       },
     })
   );
   const handleSubscribe = () => {
     createSubscriber.mutate({ videoId: video.id });
   };
+
+  const { data: isSubscribed } = useQuery(
+    trpc.subscriberCount.isSubscribed.queryOptions({ videoId: video.id })
+  );
 
   return (
     <>
@@ -44,7 +54,7 @@ export const SubscribeButton = ({ video }: Props) => {
           disabled={createSubscriber.isPending}
         >
           <span className="text-base font-medium">
-            {video.user.subscribersCount ? "Unsubscribe" : "Subscribed"}
+            {isSubscribed ? "Unsubscribe" : "Subscribed"}
           </span>
         </Button>
       )}

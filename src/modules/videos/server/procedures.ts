@@ -32,12 +32,18 @@ export const videoRouter = createTRPCRouter({
         .select({
           user: {
             ...getTableColumns(users),
-            subscribersCount: db.$count(subscribersCount),
+            subscribersCount: db.$count(
+              subscribersCount,
+              eq(subscribersCount.creatorId, users.id)
+            ),
           },
           ...getTableColumns(videos),
-          viewCount: db.$count(viewCount),
-          likedCount: db.$count(likedCount),
-          dislikeCount: db.$count(dislikeCount),
+          viewCount: db.$count(viewCount, eq(viewCount.videoId, videos.id)),
+          likedCount: db.$count(likedCount, eq(likedCount.videoId, videos.id)),
+          dislikeCount: db.$count(
+            dislikeCount,
+            eq(dislikeCount.videoId, videos.id)
+          ),
         })
         .from(videos)
         .where(eq(videos.muxPlaybackId, videoPlaybackId))

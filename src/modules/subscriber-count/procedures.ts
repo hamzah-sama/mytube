@@ -1,7 +1,7 @@
 import { db } from "@/db";
 import { subscribersCount, videos } from "@/db/schema";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import z from "zod";
 
 export const subscribersCountRouter = createTRPCRouter({
@@ -37,7 +37,7 @@ export const subscribersCountRouter = createTRPCRouter({
               eq(subscribersCount.viewerId, existingRecord.viewerId)
             )
           );
-        return {unsubscribed: true};
+        return { unsubscribed: true };
       }
 
       const [createSubscriber] = await db
@@ -49,5 +49,29 @@ export const subscribersCountRouter = createTRPCRouter({
         .returning();
 
       return createSubscriber;
+    }),
+
+  isSubscribed: protectedProcedure
+    .input(z.object({ videoId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const { userId: viewerId } = ctx.auth;
+      const { videoId } = input;
+
+      const [video] = await db
+        .select({ creatorId: videos.userId })
+        .from(videos)
+        .where(eq(videos.id, videoId));
+        
+      const [data] = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(subscribersCount)
+        .where(
+          and(
+            eq(subscribersCount.viewerId, viewerId),
+            eq(subscribersCount.creatorId, video.creatorId)
+          )
+        );
+
+      return data.count > 0;
     }),
 });
