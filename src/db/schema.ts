@@ -1,3 +1,4 @@
+import { create } from "domain";
 import {
   pgTable,
   uuid,
@@ -48,7 +49,7 @@ export const videos = pgTable("videos", {
   previewUrl: text("preview_url"),
   previewKey: text("preview_key"),
   duration: integer("duration").notNull().default(0),
-  visibility: visibilityVideos("visibility").notNull().default('public'),
+  visibility: visibilityVideos("visibility").notNull().default("public"),
   muxUploadedId: text("mux_uploaded_id").unique(),
   muxAssetId: text("mux_asset_id").unique(),
   muxStatus: text("mux_status"),
@@ -58,11 +59,39 @@ export const videos = pgTable("videos", {
   workflowThumbnailStatus: workflowStatus("workflow_thumbnail_status"),
   workflowTitleStatus: workflowStatus("workflow_title_status"),
   workflowDescriptionStatus: workflowStatus("workflow_description_status"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
   userId: uuid("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
 });
 
 export const videoUpdateSchema = createUpdateSchema(videos);
+
+export const viewCount = pgTable("view_count", {
+  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  videoId: uuid("video_id").references(() => videos.id, {onDelete: "cascade"}).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const subscribersCount = pgTable("subscribers_count", {
+  creatorId: uuid("creator_id").primaryKey().references(() => users.id, { onDelete: "cascade" }).notNull(),
+  viewerId: uuid("viewer_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const likedCount = pgTable("liked_count", {
+  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  videoId: uuid("video_id").references(() => videos.id, {onDelete: "cascade"}).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const dislikeCount = pgTable("dislike_count", {
+  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  videoId: uuid("video_id").references(() => videos.id, {onDelete: "cascade"}).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});

@@ -1,18 +1,53 @@
 import { db } from "@/db";
-import { videos, videoUpdateSchema } from "@/db/schema";
+import {
+  dislikeCount,
+  likedCount,
+  subscribersCount,
+  users,
+  videos,
+  videoUpdateSchema,
+  viewCount,
+} from "@/db/schema";
 import { mux } from "@/lib/mux";
-import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
+import {
+  baseProcedure,
+  createTRPCRouter,
+  protectedProcedure,
+} from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
-import { and, eq } from "drizzle-orm";
+import { and, eq, getTableColumns } from "drizzle-orm";
 import { UTApi } from "uploadthing/server";
 import z from "zod";
 import { Client } from "@upstash/workflow";
-import { get } from "http";
-import { th } from "zod/v4/locales";
 
 const utApi = new UTApi();
 
 export const videoRouter = createTRPCRouter({
+  getOne: baseProcedure
+    .input(z.object({ videoPlaybackId: z.string() }))
+    .query(async ({ input }) => {
+      const { videoPlaybackId } = input;
+
+      const [video] = await db
+        .select({
+          user: {
+            ...getTableColumns(users),
+            subscribersCount: db.$count(subscribersCount),
+          },
+          ...getTableColumns(videos),
+          viewCount: db.$count(viewCount),
+          likedCount: db.$count(likedCount),
+          dislikeCount: db.$count(dislikeCount),
+        })
+        .from(videos)
+        .where(eq(videos.muxPlaybackId, videoPlaybackId))
+        .innerJoin(users, eq(videos.userId, users.id));
+
+      if (!video)
+        throw new TRPCError({ code: "NOT_FOUND", message: "video not found" });
+
+      return video;
+    }),
   create: protectedProcedure
     .input(z.object({ title: z.string() }))
     .mutation(async ({ input, ctx }) => {
