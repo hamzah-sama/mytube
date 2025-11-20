@@ -1,15 +1,17 @@
 import { Button } from "@/components/ui/button";
 import { videoDetailsType } from "@/type";
-import { useAuth } from "@clerk/nextjs";
-import { useState } from "react";
+import { useAuth, useClerk } from "@clerk/nextjs";
 import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTRPC } from "@/trpc/client";
+import { toast } from "sonner";
+import { useEffect, useState } from "react";
 
 interface Props {
   video: videoDetailsType;
 }
 export const SubscribeButton = ({ video }: Props) => {
+  const { openSignIn, user } = useClerk();
   const trpc = useTRPC();
   const queryClient = useQueryClient();
   const { userId: clerkUserId } = useAuth();
@@ -29,15 +31,32 @@ export const SubscribeButton = ({ video }: Props) => {
           })
         );
       },
+      onError: (err) => {
+        toast.error(err.message);
+        if (err.data?.code === "UNAUTHORIZED") {
+          openSignIn();
+        }
+      },
     })
   );
   const handleSubscribe = () => {
+    if(!user) return openSignIn();
+    setSubscribe((prev) => !prev);
     createSubscriber.mutate({ videoId: video.id });
   };
 
-  const { data: isSubscribed } = useQuery(
-    trpc.subscriberCount.isSubscribed.queryOptions({ videoId: video.id })
-  );
+  const { data: isSubscribed } = useQuery({
+    ...trpc.subscriberCount.isSubscribed.queryOptions({ videoId: video.id }),
+    enabled: !!clerkUserId,
+  });
+
+  const [subscibe, setSubscribe] = useState(isSubscribed ?? false);
+
+  useEffect(() => {
+    if (isSubscribed !== undefined) {
+      setSubscribe(isSubscribed);
+    }
+  }, [isSubscribed]);
 
   return (
     <>
@@ -54,7 +73,7 @@ export const SubscribeButton = ({ video }: Props) => {
           disabled={createSubscriber.isPending}
         >
           <span className="text-base font-medium">
-            {isSubscribed ? "Unsubscribe" : "Subscribed"}
+            {subscibe ? "Unsubscribe" : "Subscribed"}
           </span>
         </Button>
       )}

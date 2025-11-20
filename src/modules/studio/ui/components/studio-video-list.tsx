@@ -17,7 +17,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Hint } from "@/components/hint";
 
 export const StudioVideoList = () => {
   const trpc = useTRPC();
@@ -39,7 +38,7 @@ export const StudioVideoList = () => {
           );
         }
       },
-      { rootMargin: "200px" } // mulai load 200px sebelum muncul
+      { rootMargin: "200px" } 
     );
 
     observer.observe(loaderRef.current);
