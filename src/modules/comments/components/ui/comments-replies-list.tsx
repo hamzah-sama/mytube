@@ -24,7 +24,7 @@ import { Hint } from "@/components/hint";
 import { ConfirmationModal } from "@/components/confirmation-modal";
 import { useState } from "react";
 import { toast } from "sonner";
-import { CommentsRepliesForm } from "@/modules/comments-replies/ui/comments-replies-form";
+import { CommentsRepliesForm } from "@/modules/comments/components/ui/comments-replies-form";
 import { CommentsReaction } from "@/modules/comments-reaction/ui/components/comments-reaction";
 
 interface Props {

@@ -72,7 +72,7 @@ export const commentsRouter = createTRPCRouter({
     .input(
       z.object({
         commentId: z.string(),
-        content: z.string(),
+        content: z.string().trim().min(1, { message: "Reply cannot be empty" }),
         videoPlaybackId: z.string(),
       })
     )
@@ -101,7 +101,7 @@ export const commentsRouter = createTRPCRouter({
 
       if (!content) {
         throw new TRPCError({
-          code: "NOT_FOUND",
+          code: "BAD_REQUEST",
           message: "reply cannot be empty",
         });
       }
@@ -171,7 +171,7 @@ export const commentsRouter = createTRPCRouter({
           ),
         })
         .from(comments)
-        .where(isNull(comments.parentId))
+        .where(and(eq(comments.videoId, video.id), isNull(comments.parentId)))
         .innerJoin(users, eq(comments.userId, users.id))
         .orderBy(desc(comments.createdAt));
 
@@ -200,6 +200,13 @@ export const commentsRouter = createTRPCRouter({
         .where(eq(videos.muxPlaybackId, videoPlaybackId))
         .innerJoin(comments, eq(comments.id, commentId));
 
+      if (!owner) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Comment or video not found",
+        });
+      }
+
       if (owner.video !== userId && owner.comment !== userId) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
@@ -218,16 +225,18 @@ export const commentsRouter = createTRPCRouter({
     .query(async ({ input }) => {
       const { videoPlaybackId } = input;
 
-      const [existingVideo] = await db
-        .select({ userId: videos.userId })
-        .from(videos)
-        .where(eq(videos.muxPlaybackId, videoPlaybackId));
-
       const [video] = await db
         .select({ clerkId: users.clerkId })
         .from(videos)
         .where(eq(videos.muxPlaybackId, videoPlaybackId))
-        .innerJoin(users, eq(users.id, existingVideo.userId));
+        .innerJoin(users, eq(users.id, videos.userId));
+
+      if (!video) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Video not found",
+        });
+      }
 
       return video;
     }),

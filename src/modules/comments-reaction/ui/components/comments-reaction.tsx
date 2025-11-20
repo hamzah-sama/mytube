@@ -20,7 +20,7 @@ export const CommentsReaction = ({
   likedCount,
   dislikedCount,
 }: Props) => {
-  const { openSignIn } = useClerk();
+  const { user, openSignIn } = useClerk();
   const trpc = useTRPC();
   const queryClient = useQueryClient();
 
@@ -67,24 +67,27 @@ export const CommentsReaction = ({
     })
   );
 
-  const { data: isLiked } = useQuery(
-    trpc.commentsReaction.isLiked.queryOptions({ commentId })
-  );
-  const { data: isDisiked } = useQuery(
-    trpc.commentsReaction.isDisliked.queryOptions({ commentId })
-  );
+  const { data: isLiked } = useQuery({
+    ...trpc.commentsReaction.isLiked.queryOptions({ commentId }),
+    enabled: !!user,
+  });
+  const { data: isDisliked } = useQuery({
+    ...trpc.commentsReaction.isDisliked.queryOptions({ commentId }),
+    enabled: !!user,
+  });
 
   const [like, setLike] = useState(isLiked ?? false);
-  const [dislike, setDisLike] = useState(isDisiked ?? false);
+  const [dislike, setDisLike] = useState(isDisliked ?? false);
   const [totalLiked, setTotalLiked] = useState(likedCount);
   const [totalDisliked, setTotalDisliked] = useState(dislikedCount);
 
   useEffect(() => {
     if (isLiked !== undefined) setLike(isLiked);
-    if (isDisiked !== undefined) setDisLike(isDisiked);
-  }, [isLiked, isDisiked]);
+    if (isDisliked !== undefined) setDisLike(isDisliked);
+  }, [isLiked, isDisliked]);
 
- const handleLikeButton = () => {
+  const handleLikeButton = () => {
+    if (!user) return openSignIn();
     setLike((prev) => !prev);
     setDisLike(false);
     setTotalLiked(like ? totalLiked - 1 : totalLiked + 1);
@@ -93,12 +96,18 @@ export const CommentsReaction = ({
   };
 
   const handleDislikeButton = () => {
+    if (!user) return openSignIn();
     setDisLike((prev) => !prev);
     setLike(false);
     setTotalDisliked(dislike ? totalDisliked - 1 : totalDisliked + 1);
     setTotalLiked(like ? totalLiked - 1 : totalLiked);
     addDisliked.mutate({ commentId });
   };
+
+  console.log("like: ", like);
+  console.log("dislike: ", dislike);
+  console.log("totalLiked: ", totalLiked);
+  console.log("totaldisiked: ", totalDisliked);
 
   return (
     <div className="flex space-x-4">

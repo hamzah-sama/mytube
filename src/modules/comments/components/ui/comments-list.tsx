@@ -30,8 +30,8 @@ import { Hint } from "@/components/hint";
 import { ConfirmationModal } from "@/components/confirmation-modal";
 import { useState } from "react";
 import { toast } from "sonner";
-import { CommentsRepliesForm } from "@/modules/comments-replies/ui/comments-replies-form";
-import { ReplyLists } from "@/modules/comments-replies/ui/comments-replies-list";
+import { CommentsRepliesForm } from "@/modules/comments/components/ui/comments-replies-form";
+import { ReplyLists } from "@/modules/comments/components/ui/comments-replies-list";
 
 interface Props {
   data: commentType;

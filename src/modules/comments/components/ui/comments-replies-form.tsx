@@ -26,11 +26,11 @@ export const CommentsRepliesForm = ({
 }: Props) => {
   const { user, openSignIn } = useClerk();
   const trpc = useTRPC();
-  const queryCLient = useQueryClient();
+  const queryClient = useQueryClient();
 
   const commentReplyType = z.object({
     commentId: z.string(),
-    content: z.string(),
+    content: z.string().min(1, { message: "Reply cannot be empty" }),
     videoPlaybackId: z.string(),
   });
 
@@ -46,10 +46,10 @@ export const CommentsRepliesForm = ({
   const createReplies = useMutation(
     trpc.comments.addReply.mutationOptions({
       onSuccess: () => {
-        queryCLient.invalidateQueries(
+        queryClient.invalidateQueries(
           trpc.comments.getMany.queryOptions({ videoPlaybackId })
         );
-        toast.error("reply added");
+        toast.error("Reply added");
         form.reset();
         onCancel();
         onSuccess();

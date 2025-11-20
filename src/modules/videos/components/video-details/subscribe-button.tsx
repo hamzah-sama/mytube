@@ -11,7 +11,7 @@ interface Props {
   video: videoDetailsType;
 }
 export const SubscribeButton = ({ video }: Props) => {
-  const { openSignIn } = useClerk();
+  const { openSignIn, user } = useClerk();
   const trpc = useTRPC();
   const queryClient = useQueryClient();
   const { userId: clerkUserId } = useAuth();
@@ -40,6 +40,7 @@ export const SubscribeButton = ({ video }: Props) => {
     })
   );
   const handleSubscribe = () => {
+    if(!user) return openSignIn();
     setSubscribe((prev) => !prev);
     createSubscriber.mutate({ videoId: video.id });
   };

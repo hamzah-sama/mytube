@@ -20,7 +20,7 @@ export const VideoReaction = ({
   likedCount,
   dislikedCount,
 }: Props) => {
-  const { openSignIn } = useClerk();
+  const { openSignIn , user} = useClerk();
   const trpc = useTRPC();
   const queryClient = useQueryClient();
 
@@ -96,6 +96,7 @@ export const VideoReaction = ({
   }, [isLiked, isDisliked]);
 
   const handleLikeButton = () => {
+    if(!user) return openSignIn();
     setLike((prev) => !prev);
     setDislike(false);
     setTotalLiked(like ? totalLiked - 1 : totalLiked + 1);
@@ -104,6 +105,7 @@ export const VideoReaction = ({
   };
 
   const handleDislikeButton = () => {
+    if(!user) return openSignIn();
     setDislike((prev) => !prev);
     setLike(false);
     setTotalDisliked(dislike ? totalDisliked - 1 : totalDisliked + 1);
