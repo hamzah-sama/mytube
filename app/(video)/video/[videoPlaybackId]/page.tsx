@@ -1,3 +1,4 @@
+import { VideoSkeleton } from "@/modules/videos/components/video-skeleton";
 import { VideoView } from "@/modules/videos/view/video-view";
 import { getQueryClient, trpc } from "@/trpc/server";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
@@ -19,7 +20,7 @@ const Page = async ({ params }: Props) => {
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <ErrorBoundary fallback={<p>Error...</p>}>
-        <Suspense fallback={<p>Loading...</p>}>
+        <Suspense fallback={<VideoSkeleton />}>
           <VideoView videoPlaybackId={videoPlaybackId} />
         </Suspense>
       </ErrorBoundary>

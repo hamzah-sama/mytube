@@ -1,3 +1,5 @@
+import { table } from "console";
+import { relations } from "drizzle-orm";
 import {
   pgTable,
   uuid,
@@ -6,9 +8,11 @@ import {
   integer,
   pgEnum,
   primaryKey,
+  uniqueIndex,
+  foreignKey,
 } from "drizzle-orm/pg-core";
 
-import { createUpdateSchema } from "drizzle-zod";
+import { createUpdateSchema, createInsertSchema } from "drizzle-zod";
 
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -102,24 +106,105 @@ export const subscribersCount = pgTable(
   })
 );
 
-export const likedCount = pgTable("liked_count", {
-  userId: uuid("user_id")
-    .references(() => users.id, { onDelete: "cascade" })
-    .notNull(),
-  videoId: uuid("video_id")
-    .references(() => videos.id, { onDelete: "cascade" })
-    .notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+export const likedCount = pgTable(
+  "liked_count",
+  {
+    userId: uuid("user_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    videoId: uuid("video_id")
+      .references(() => videos.id, { onDelete: "cascade" })
+      .notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => [uniqueIndex("unique_like").on(table.userId, table.videoId)]
+);
 
-export const dislikeCount = pgTable("dislike_count", {
-  userId: uuid("user_id")
-    .references(() => users.id, { onDelete: "cascade" })
-    .notNull(),
-  videoId: uuid("video_id")
-    .references(() => videos.id, { onDelete: "cascade" })
-    .notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+export const dislikeCount = pgTable(
+  "dislike_count",
+  {
+    userId: uuid("user_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    videoId: uuid("video_id")
+      .references(() => videos.id, { onDelete: "cascade" })
+      .notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => [uniqueIndex("unique_dislike").on(table.userId, table.videoId)]
+);
+
+export const comments = pgTable(
+  "comments",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    parentId: uuid("parent_id"),
+    userId: uuid("user_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    videoId: uuid("video_id")
+      .references(() => videos.id, { onDelete: "cascade" })
+      .notNull(),
+    content: text("content").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (t) => {
+    return [
+      foreignKey({
+        columns: [t.parentId],
+        foreignColumns: [t.id],
+        name: 'comments_parent_id_fkey',
+      }).onDelete("cascade"),
+    ];
+  }
+);
+
+export const commetsRelation = relations(comments, ({ one, many }) => ({
+  parent: one(comments, {
+    relationName: "comments_parent_id_fkey",
+    fields: [comments.parentId],
+    references: [comments.id],
+  }),
+  replies: many(comments, {
+    relationName: 'comments_parent_id_fkey',
+  }),
+}));
+
+export const commentInsertSchema = createInsertSchema(comments);
+
+export const commentsLikeCount = pgTable(
+  "comments_like_count",
+  {
+    userId: uuid("user_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    commentId: uuid("comment_id")
+      .references(() => comments.id, { onDelete: "cascade" })
+      .notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => [
+    uniqueIndex("unique_like_comments").on(table.userId, table.commentId),
+  ]
+);
+
+export const commentsDislikeCount = pgTable(
+  "comments_dislike_count",
+  {
+    userId: uuid("user_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    commentId: uuid("comment_id")
+      .references(() => comments.id, { onDelete: "cascade" })
+      .notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => [
+    uniqueIndex("unique_dislike_comments").on(table.userId, table.commentId),
+  ]
+);

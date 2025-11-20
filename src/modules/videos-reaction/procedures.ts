@@ -1,7 +1,7 @@
 import { db } from "@/db";
 import { dislikeCount, likedCount } from "@/db/schema";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import z from "zod";
 
 export const reactionRouter = createTRPCRouter({
@@ -18,9 +18,8 @@ export const reactionRouter = createTRPCRouter({
           and(eq(likedCount.videoId, videoId), eq(likedCount.userId, userId))
         );
 
-      const [existingRecordDislike] = await db
-        .select()
-        .from(dislikeCount)
+      await db
+        .delete(dislikeCount)
         .where(
           and(
             eq(dislikeCount.videoId, videoId),
@@ -37,17 +36,6 @@ export const reactionRouter = createTRPCRouter({
               eq(likedCount.userId, existingRecord.userId)
             )
           );
-      } else if (existingRecordDislike) {
-        await db
-          .delete(dislikeCount)
-          .where(
-            and(
-              eq(dislikeCount.videoId, existingRecordDislike.videoId),
-              eq(dislikeCount.userId, existingRecordDislike.userId)
-            )
-          );
-
-        await db.insert(likedCount).values({ videoId, userId }).returning();
       } else {
         await db.insert(likedCount).values({ videoId, userId }).returning();
       }
@@ -69,9 +57,8 @@ export const reactionRouter = createTRPCRouter({
           )
         );
 
-      const [existingRecordLike] = await db
-        .select()
-        .from(likedCount)
+      await db
+        .delete(likedCount)
         .where(
           and(eq(likedCount.videoId, videoId), eq(likedCount.userId, userId))
         );
@@ -85,19 +72,42 @@ export const reactionRouter = createTRPCRouter({
               eq(dislikeCount.userId, existingRecord.userId)
             )
           );
-      } else if (existingRecordLike) {
-        await db
-          .delete(likedCount)
-          .where(
-            and(
-              eq(likedCount.videoId, existingRecordLike.videoId),
-              eq(likedCount.userId, existingRecordLike.userId)
-            )
-          );
-
-        await db.insert(dislikeCount).values({ videoId, userId }).returning();
       } else {
         await db.insert(dislikeCount).values({ videoId, userId }).returning();
       }
+    }),
+
+  isLiked: protectedProcedure
+    .input(z.object({ videoId: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const { videoId } = input;
+      const { userId } = ctx.auth;
+
+      const [data] = await db
+        .select()
+        .from(likedCount)
+        .where(
+          and(eq(likedCount.videoId, videoId), eq(likedCount.userId, userId))
+        );
+
+      return !!data;
+    }),
+  isDisliked: protectedProcedure
+    .input(z.object({ videoId: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const { videoId } = input;
+      const { userId } = ctx.auth;
+
+      const [data] = await db
+        .select()
+        .from(dislikeCount)
+        .where(
+          and(
+            eq(dislikeCount.videoId, videoId),
+            eq(dislikeCount.userId, userId)
+          )
+        );
+
+      return !!data;
     }),
 });
