@@ -1,6 +1,6 @@
 import { VideoManagementSkeleton } from "@/modules/studio/ui/components/skeleton/video-management-skeleton";
 import {
-  VideoManagementView,
+VideoManagementView,
 } from "@/modules/studio/ui/view/video-management-view";
 import { getQueryClient, trpc } from "@/trpc/server";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";

@@ -49,7 +49,7 @@ export const ThumbnailField = ({
   };
 
   const restoreThumbnail = useMutation(
-    trpc.video.restoreThumbnail.mutationOptions({
+    trpc.studio.restoreThumbnail.mutationOptions({
       onSuccess: () => {
         queryClient.invalidateQueries(trpc.studio.getMany.queryOptions());
         queryClient.invalidateQueries(
@@ -65,7 +65,7 @@ export const ThumbnailField = ({
   const [openUploadModal, setOpenUploadModal] = useState(false);
 
   const { data: workflow } = useQuery(
-    trpc.video.getThumbnailWorkFlow.queryOptions(
+    trpc.studio.getThumbnailWorkFlow.queryOptions(
       { videoId },
       {
         enabled: isGeneratingThumbnail,

@@ -7,10 +7,16 @@ export type categoriesType = inferProcedureOutput<
 export type videoDetailsType = inferProcedureOutput<
   AppRouter["video"]["getOne"]
 >;
+
+export type videoType = inferProcedureOutput<
+  AppRouter["video"]["getSuggestions"]
+>[number];
+
 export type commentType = inferProcedureOutput<
   AppRouter["comments"]["getMany"]
 >;
-export type replyType = inferProcedureOutput<AppRouter["comments"]["getMany"]>['getReplies'][number]
-
+export type replyType = inferProcedureOutput<
+  AppRouter["comments"]["getMany"]
+>["getReplies"][number];
 
 // export type replyType = inferProcedureOutput<AppRouter['commentsReplies']['getMany']>

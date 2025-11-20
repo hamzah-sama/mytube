@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { CommentView } from "@/modules/comments/components/view/comment-view";
 import { CommentsSkeleton } from "@/modules/comments/components/ui/comments-skeleton";
+import { VideoSugestionSkeleton } from "../components/video-sugestion-skeleton";
 
 interface Props {
   videoPlaybackId: string;
@@ -15,7 +16,9 @@ export const VideoView = async ({ videoPlaybackId }: Props) => {
   void queryClient.prefetchQuery(
     trpc.comments.getMany.queryOptions({ videoPlaybackId })
   );
-
+  void queryClient.prefetchQuery(
+    trpc.video.getSuggestions.queryOptions({ videoPlaybackId })
+  );
   return (
     <div className="flex flex-col mx-auto max-w-[1700px] mb-10 p-2">
       <div className="flex flex-col lg:flex-row gap-6">
@@ -31,7 +34,13 @@ export const VideoView = async ({ videoPlaybackId }: Props) => {
             </HydrationBoundary>
           </div>
         </div>
-        <SugestionSection />
+        <HydrationBoundary state={dehydrate(queryClient)}>
+          <ErrorBoundary fallback={<p>Error...</p>}>
+            <Suspense fallback={<p>Loading...</p>}>
+              <SugestionSection videoPlaybackId={videoPlaybackId} />
+            </Suspense>
+          </ErrorBoundary>
+        </HydrationBoundary>
         <div className="block lg:hidden">
           <HydrationBoundary state={dehydrate(queryClient)}>
             <ErrorBoundary fallback={<p>Error...</p>}>

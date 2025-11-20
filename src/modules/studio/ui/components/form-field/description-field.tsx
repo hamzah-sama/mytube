@@ -7,7 +7,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { useTRPC } from "@/trpc/client";
@@ -27,7 +26,7 @@ export const DescriptionField = ({ control, videoId, value }: Props) => {
   const [isgenerateDescription, setIsgenerateDescription] = useState(false);
   const trpc = useTRPC();
   const generateDescription = useMutation(
-    trpc.video.generateDescription.mutationOptions({
+    trpc.studio.generateDescription.mutationOptions({
       onSuccess: () => {
         setIsgenerateDescription(true);
         toast.info("Description generated processing...");
@@ -39,7 +38,7 @@ export const DescriptionField = ({ control, videoId, value }: Props) => {
   );
 
   const { data: description } = useQuery(
-    trpc.video.getDescriptionWorkFlow.queryOptions(
+    trpc.studio.getDescriptionWorkFlow.queryOptions(
       { videoId },
       {
         enabled: isgenerateDescription,
@@ -74,7 +73,9 @@ export const DescriptionField = ({ control, videoId, value }: Props) => {
       control={control}
       render={({ field }) => (
         <FormItem
-          className={cn(isgenerateDescription && "cursor-not-allowed opacity-20")}
+          className={cn(
+            isgenerateDescription && "cursor-not-allowed opacity-20"
+          )}
         >
           <div className="flex items-center gap-5">
             <FormLabel>Description</FormLabel>
@@ -93,7 +94,8 @@ export const DescriptionField = ({ control, videoId, value }: Props) => {
           <FormControl>
             <Textarea
               {...field}
-              placeholder="Add a title to your video"
+              value={field.value ?? ""}
+              placeholder="Add a description to your video"
               disabled={isgenerateDescription}
               className="min-h-[150px] max-h-[150px] resize-none"
             />

@@ -26,7 +26,7 @@ export const TitleField = ({ control, videoId, value }: Props) => {
   const [isgenerateTitle, setIsgenerateTitle] = useState(false);
   const trpc = useTRPC();
   const generateTitle = useMutation(
-    trpc.video.generateTitle.mutationOptions({
+    trpc.studio.generateTitle.mutationOptions({
       onSuccess: () => {
         setIsgenerateTitle(true);
         toast.info("Title generated processing...");
@@ -38,7 +38,7 @@ export const TitleField = ({ control, videoId, value }: Props) => {
   );
 
   const { data: title } = useQuery(
-    trpc.video.getTitleWorkFlow.queryOptions(
+    trpc.studio.getTitleWorkFlow.queryOptions(
       { videoId },
       {
         enabled: isgenerateTitle,
