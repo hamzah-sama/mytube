@@ -4,8 +4,7 @@ import { VideoError } from "@/modules/videos/components/video-error";
 import { VideoSection } from "@/modules/videos/components/video-section";
 import { VideoSkeleton } from "@/modules/videos/components/video-skeleton";
 import { SugestionSection } from "@/modules/videos/components/video-sugestion";
-import { VideoSugestionSkeleton } from "@/modules/videos/components/video-sugestion-skeleton";
-import { VideoView } from "@/modules/videos/view/video-view";
+import { VideoSuggestionSkeleton } from "@/modules/videos/components/video-sugestion-skeleton";
 import { getQueryClient, trpc } from "@/trpc/server";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { Suspense } from "react";
@@ -52,7 +51,7 @@ const Page = async ({ params }: Props) => {
         </div>
         <HydrationBoundary state={dehydrate(queryClient)}>
           <ErrorBoundary fallback={<p>Error...</p>}>
-            <Suspense fallback={<VideoSugestionSkeleton />}>
+            <Suspense fallback={<VideoSuggestionSkeleton />}>
               <SugestionSection videoPlaybackId={videoPlaybackId} />
             </Suspense>
           </ErrorBoundary>

@@ -271,7 +271,7 @@ export const studioProcedures = createTRPCRouter({
       const { userId } = ctx.auth;
 
       const { workflowRunId } = await client.trigger({
-        url: `http://localhost:3000/api/workflow/thumbnail`,
+        url: `http://${process.env.WORKFLOW_BASE_URL}/api/workflow/thumbnail`,
         retries: 3,
         keepTriggerConfig: true,
         body: { userId, videoId: input.videoId, prompt: input.prompt },
@@ -314,7 +314,7 @@ export const studioProcedures = createTRPCRouter({
       const client = new Client({ token: process.env.QSTASH_TOKEN! });
 
       const { workflowRunId } = await client.trigger({
-        url: `http://localhost:3000/api/workflow/title`,
+        url: `http://${process.env.WORKFLOW_BASE_URL}/api/workflow/title`,
         retries: 3,
         keepTriggerConfig: true,
         body: { userId, videoId: input.videoId },

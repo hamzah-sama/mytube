@@ -1,6 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
-export const VideoSugestionSkeleton = () => {
+export const VideoSuggestionSkeleton = () => {
   return (
     <div className="flex flex-col gap-3">
       {Array.from({ length: 10 }).map((_, index) => (

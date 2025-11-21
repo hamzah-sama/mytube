@@ -1,16 +1,7 @@
 import { ArrowLeftIcon } from "lucide-react";
 import Link from "next/link";
 
-interface Props {
-  error?: any;
-  reset?: () => void;
-}
-
-export const VideoError = ({ error, reset }: Props) => {
-  const isNotFound =
-    error?.data?.code === "NOT_FOUND" ||
-    error?.message?.toLowerCase().includes("not found");
-
+export const VideoError = () => {
   return (
     <div className="w-full flex flex-col items-center justify-center py-20 text-center">
       <h2 className="text-xl font-semibold mb-2">Something went wrong</h2>

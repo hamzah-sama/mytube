@@ -18,6 +18,7 @@ export const videoRouter = createTRPCRouter({
     .input(z.object({ videoPlaybackId: z.string() }))
     .query(async ({ input }) => {
       const { videoPlaybackId } = input;
+      let userId: string | null = null;
 
       const { userId: clerkUserId } = await auth();
 
@@ -25,6 +26,8 @@ export const videoRouter = createTRPCRouter({
         .select({ id: users.id })
         .from(users)
         .where(clerkUserId ? eq(users.clerkId, clerkUserId) : undefined);
+
+      userId = user?.id;
 
       const [video] = await db
         .select({
@@ -47,7 +50,10 @@ export const videoRouter = createTRPCRouter({
         .where(
           and(
             eq(videos.muxPlaybackId, videoPlaybackId),
-            or(eq(videos.visibility, "public"), eq(videos.userId, user.id))
+            or(
+              eq(videos.visibility, "public"),
+              userId ? eq(videos.userId, user.id) : undefined
+            )
           )
         )
         .innerJoin(users, eq(videos.userId, users.id));
@@ -88,7 +94,7 @@ export const videoRouter = createTRPCRouter({
             eq(videos.visibility, "public")
           )
         )
-        .innerJoin(users, eq(videos.userId, users.id))
+        .innerJoin(users, eq(videos.userId, users.id));
       return data;
     }),
 });
