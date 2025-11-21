@@ -16,7 +16,7 @@ export const CreateVideoButton = () => {
   const queryClient = useQueryClient();
   const trpc = useTRPC();
   const createVideo = useMutation(
-    trpc.video.create.mutationOptions({
+    trpc.studio.create.mutationOptions({
       onSuccess: () => {
         queryClient.invalidateQueries(trpc.studio.getMany.queryOptions());
         toast.success("Video created");
@@ -29,7 +29,7 @@ export const CreateVideoButton = () => {
   );
 
   const { data: statusData } = useQuery(
-    trpc.video.getStatus.queryOptions(
+    trpc.studio.getStatus.queryOptions(
       {
         videoId: createVideo.data?.video.id || "",
       },

@@ -186,7 +186,7 @@ export const CommentsList = ({ data, index, videoPlaybackId }: Props) => {
               )}
             </div>
           </div>
-          {canDeleteComment && (
+          {canDeleteComment && !!user && (
             <DropdownMenu modal>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="rounded-full">

@@ -1,13 +1,6 @@
 "use client";
 
 import { ConfirmationModal } from "@/components/confirmation-modal";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Form } from "@/components/ui/form";
 import { useTRPC } from "@/trpc/client";
 import {
@@ -15,12 +8,7 @@ import {
   useQueryClient,
   useSuspenseQuery,
 } from "@tanstack/react-query";
-import {
-  CopyCheckIcon,
-  CopyIcon,
-  MoreVerticalIcon,
-  Trash2Icon,
-} from "lucide-react";
+
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -29,17 +17,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { videoUpdateSchema } from "@/db/schema";
 import z from "zod";
 
-import { fallbackThumbnail, PUBLIC_URL } from "@/constant";
+import { fallbackThumbnail } from "@/constant";
 import { ThumbnailField } from "../components/form-field/thumbnail-field";
-import { Hint } from "@/components/hint";
 import { ResponsiveModal } from "@/components/responsiveModal";
 import { GenerateThumbnailModal } from "../components/generate-thumbnail";
 import { TitleField } from "../components/form-field/title-field";
 import { DescriptionField } from "../components/form-field/description-field";
 import { CategoriesField } from "../components/form-field/categories-field";
 import { VisibilityField } from "../components/form-field/visibility-field";
-import { VideoPlayer } from "@/components/video-player";
-import { VideoAlert } from "@/components/video-alert";
 import { HeaderField } from "../components/form-field/header-field";
 import { VideoField } from "../components/form-field/video-field";
 import { VideoLinkField } from "../components/form-field/video-link-field";
@@ -65,7 +50,7 @@ export const VideoManagementView = ({ videoId }: Props) => {
   );
 
   const handleDelete = useMutation(
-    trpc.video.delete.mutationOptions({
+    trpc.studio.delete.mutationOptions({
       onSuccess: () => {
         setOpenModal(false);
         queryClient.invalidateQueries(trpc.studio.getMany.queryOptions());
@@ -87,7 +72,7 @@ export const VideoManagementView = ({ videoId }: Props) => {
   });
 
   const updateVideo = useMutation(
-    trpc.video.update.mutationOptions({
+    trpc.studio.update.mutationOptions({
       onSuccess: () => {
         queryClient.invalidateQueries(trpc.studio.getMany.queryOptions());
         queryClient.invalidateQueries(
@@ -128,7 +113,7 @@ export const VideoManagementView = ({ videoId }: Props) => {
       </ResponsiveModal>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <div className="max-w-[1400px] px-4 pt-2.5">
+          <div className="max-w-[1400px] px-4 pt-2.5 relative">
             <HeaderField
               setOpenModal={setOpenModal}
               isPending={updateVideo.isPending}

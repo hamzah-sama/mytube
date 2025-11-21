@@ -3,8 +3,7 @@ import { Form, FormField, FormItem } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { useTRPC } from "@/trpc/client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
@@ -17,10 +16,9 @@ interface Props {
 export const GenerateThumbnailModal = ({
   videoId,
   setOpenGenerateThumbnail,
-  setIsGeneratingThumbnail
+  setIsGeneratingThumbnail,
 }: Props) => {
   const trpc = useTRPC();
-  const queryClient = useQueryClient();
   const formSchema = z.object({
     prompt: z.string().min(1, "Prompt is required"),
     videoId: z.string(),
@@ -34,7 +32,7 @@ export const GenerateThumbnailModal = ({
   });
 
   const generateThumbnail = useMutation(
-    trpc.video.generateThumbnail.mutationOptions({
+    trpc.studio.generateThumbnail.mutationOptions({
       onSuccess: () => {
         setIsGeneratingThumbnail(true);
         setOpenGenerateThumbnail(false);
