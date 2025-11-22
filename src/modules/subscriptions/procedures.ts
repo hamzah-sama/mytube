@@ -1,6 +1,7 @@
 import { db } from "@/db";
 import { subscriptions, videos } from "@/db/schema";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
+import { TRPCError } from "@trpc/server";
 import { and, eq, sql } from "drizzle-orm";
 import z from "zod";
 
@@ -8,7 +9,6 @@ export const subscriptionsRouter = createTRPCRouter({
   create: protectedProcedure
     .input(z.object({ videoId: z.string() }))
     .mutation(async ({ ctx, input }) => {
-
       // get viewerId from auth context and videoId from input
       const { userId: viewerId } = ctx.auth;
       const { videoId } = input;
@@ -19,8 +19,15 @@ export const subscriptionsRouter = createTRPCRouter({
         .from(videos)
         .where(eq(videos.id, videoId));
 
-      if (viewerId === getvideoUserId.creatorId) return;
+      if (!getvideoUserId)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Video not found",
+        });
 
+      // prevent users from subscribing to themselves
+
+      if (viewerId === getvideoUserId.creatorId) return;
 
       // check if a subscription record already exists
       const [existingRecord] = await db
@@ -70,8 +77,14 @@ export const subscriptionsRouter = createTRPCRouter({
         .select({ creatorId: videos.userId })
         .from(videos)
         .where(eq(videos.id, videoId));
-        
-        // check if a subscription record exists
+
+      if (!video)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Video not found",
+        });
+
+      // check if a subscription record exists
       const [data] = await db
         .select({ count: sql<number>`count(*)` })
         .from(subscriptions)
@@ -82,7 +95,7 @@ export const subscriptionsRouter = createTRPCRouter({
           )
         );
 
-        // if it exists, return true else false
+      // if it exists, return true else false
       return data.count > 0;
     }),
 });

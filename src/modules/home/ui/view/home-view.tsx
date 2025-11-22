@@ -47,7 +47,7 @@ const VideoSkeleton = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 mb-10">
       {Array.from({ length: 6 }).map((_, index) => (
-        <div className="p-4 flex flex-col gap-3 w-full">
+        <div className="p-4 flex flex-col gap-3 w-full" key={index}>
           <Skeleton className="w-full aspect-video rounded-lg" />
           <div className="flex gap-3">
             <Skeleton className="rounded-full size-12 shrink-0" />

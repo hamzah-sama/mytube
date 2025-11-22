@@ -55,14 +55,14 @@ export const videoRouter = createTRPCRouter({
       // get authenticated user's clerk id
       const { userId: clerkUserId } = await auth();
 
-      // get authenticated user's id from db if clerk id exists
-      const [user] = await db
-        .select({ id: users.id })
-        .from(users)
-        .where(clerkUserId ? eq(users.clerkId, clerkUserId) : undefined);
-
-      // set userId variable to authenticated user's id
-      userId = user?.id;
+      // get authenticated user's id from db if clerk id exists and assign it to userId variable
+      if (clerkUserId) {
+        const [user] = await db
+          .select({ id: users.id })
+          .from(users)
+          .where(eq(users.clerkId, clerkUserId));
+        userId = user?.id;
+      }
 
       // fetch the video with additional user and count info and allow access to private videos if the authenticated user is the owner
       const [video] = await db
@@ -85,7 +85,7 @@ export const videoRouter = createTRPCRouter({
             eq(videos.muxPlaybackId, videoPlaybackId),
             or(
               eq(videos.visibility, "public"),
-              userId ? eq(videos.userId, user.id) : undefined
+              userId ? eq(videos.userId, userId) : undefined
             )
           )
         )
@@ -212,7 +212,10 @@ export const videoRouter = createTRPCRouter({
       .from(videos)
       .where(and(eq(videos.visibility, "public"), inArray(videos.id, videoIds)))
       .innerJoin(users, eq(videos.userId, users.id))
-      .innerJoin(like, and(eq(like.videoId, videos.id), eq(like.userId, userId)))
+      .innerJoin(
+        like,
+        and(eq(like.videoId, videos.id), eq(like.userId, userId))
+      )
       .orderBy(desc(like.createdAt), desc(videos.id));
     return data;
   }),
