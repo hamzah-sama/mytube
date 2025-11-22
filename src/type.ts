@@ -8,8 +8,8 @@ export type videoDetailsType = inferProcedureOutput<
   AppRouter["video"]["getOne"]
 >;
 
-export type videoType = inferProcedureOutput<
-  AppRouter["video"]["getSuggestions"]
+export type videoCardType = inferProcedureOutput<
+  AppRouter["video"]["getMany"]
 >[number];
 
 export type commentType = inferProcedureOutput<

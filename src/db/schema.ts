@@ -89,8 +89,8 @@ export const viewCount = pgTable(
   })
 );
 
-export const subscribersCount = pgTable(
-  "subscribers_count",
+export const subscriptions = pgTable(
+  "subscriptions",
   {
     creatorId: uuid("creator_id")
       .references(() => users.id, { onDelete: "cascade" })
@@ -106,8 +106,8 @@ export const subscribersCount = pgTable(
   })
 );
 
-export const likedCount = pgTable(
-  "liked_count",
+export const like = pgTable(
+  "like",
   {
     userId: uuid("user_id")
       .references(() => users.id, { onDelete: "cascade" })
@@ -121,8 +121,8 @@ export const likedCount = pgTable(
   (table) => [uniqueIndex("unique_like").on(table.userId, table.videoId)]
 );
 
-export const dislikeCount = pgTable(
-  "dislike_count",
+export const dislike = pgTable(
+  "dislike",
   {
     userId: uuid("user_id")
       .references(() => users.id, { onDelete: "cascade" })

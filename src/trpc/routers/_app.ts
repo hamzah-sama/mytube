@@ -4,17 +4,17 @@ import { categoriesRouter } from "@/modules/categories/server/procedures";
 import { studioProcedures } from "@/modules/studio/server/procedures";
 import { videoRouter } from "@/modules/videos/server/procedures";
 import { ViewCountRouter } from "@/modules/view-count/procedures";
-import { subscribersCountRouter } from "@/modules/subscriber-count/procedures";
-import { reactionRouter } from "@/modules/videos-reaction/procedures";
+import { reactionRouter } from "@/modules/videos-reaction/server/procedures";
 import { commentsRouter } from "@/modules/comments/server/procedures";
 import { commentsReactionRouter } from "@/modules/comments-reaction/server/procedures";
+import { subscriptionsRouter } from "@/modules/subscriptions/procedures";
 export const appRouter = createTRPCRouter({
   categories: categoriesRouter,
   auth: authRouter,
   studio: studioProcedures,
   video: videoRouter,
   viewCount: ViewCountRouter,
-  subscriberCount: subscribersCountRouter,
+  subscription: subscriptionsRouter,
   reactionCount: reactionRouter,
   comments: commentsRouter,
   commentsReaction: commentsReactionRouter,

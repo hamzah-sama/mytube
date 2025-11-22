@@ -1,12 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { VideoThumbnail } from "@/components/video-thumbnail";
-import { videoType } from "@/type";
+import { videoCardType } from "@/type";
 import { formatDistanceToNow } from "date-fns";
 import { MoreVerticalIcon } from "lucide-react";
 import Link from "next/link";
 
 interface Props {
-  data: videoType;
+  data: videoCardType;
 }
 export const VideoCard = ({ data }: Props) => {
   return (

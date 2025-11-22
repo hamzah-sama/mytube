@@ -1,16 +1,19 @@
 import { db } from "@/db";
-import { subscribersCount, videos } from "@/db/schema";
+import { subscriptions, videos } from "@/db/schema";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { and, eq, sql } from "drizzle-orm";
 import z from "zod";
 
-export const subscribersCountRouter = createTRPCRouter({
+export const subscriptionsRouter = createTRPCRouter({
   create: protectedProcedure
     .input(z.object({ videoId: z.string() }))
     .mutation(async ({ ctx, input }) => {
+
+      // get viewerId from auth context and videoId from input
       const { userId: viewerId } = ctx.auth;
       const { videoId } = input;
 
+      // get the creatorId of the video
       const [getvideoUserId] = await db
         .select({ creatorId: videos.userId })
         .from(videos)
@@ -18,30 +21,34 @@ export const subscribersCountRouter = createTRPCRouter({
 
       if (viewerId === getvideoUserId.creatorId) return;
 
+
+      // check if a subscription record already exists
       const [existingRecord] = await db
         .select()
-        .from(subscribersCount)
+        .from(subscriptions)
         .where(
           and(
-            eq(subscribersCount.viewerId, viewerId),
-            eq(subscribersCount.creatorId, getvideoUserId.creatorId)
+            eq(subscriptions.viewerId, viewerId),
+            eq(subscriptions.creatorId, getvideoUserId.creatorId)
           )
         );
 
+      // if it exists, delete it (unsubscribe)
       if (existingRecord) {
         await db
-          .delete(subscribersCount)
+          .delete(subscriptions)
           .where(
             and(
-              eq(subscribersCount.creatorId, existingRecord.creatorId),
-              eq(subscribersCount.viewerId, existingRecord.viewerId)
+              eq(subscriptions.creatorId, existingRecord.creatorId),
+              eq(subscriptions.viewerId, existingRecord.viewerId)
             )
           );
         return { unsubscribed: true };
       }
 
+      // if it doesn't exist, create a new subscription record
       const [createSubscriber] = await db
-        .insert(subscribersCount)
+        .insert(subscriptions)
         .values({
           creatorId: getvideoUserId.creatorId,
           viewerId,
@@ -54,24 +61,28 @@ export const subscribersCountRouter = createTRPCRouter({
   isSubscribed: protectedProcedure
     .input(z.object({ videoId: z.string() }))
     .query(async ({ ctx, input }) => {
+      // get viewerId from auth context and videoId from input
       const { userId: viewerId } = ctx.auth;
       const { videoId } = input;
 
+      // get the creatorId of the video
       const [video] = await db
         .select({ creatorId: videos.userId })
         .from(videos)
         .where(eq(videos.id, videoId));
         
+        // check if a subscription record exists
       const [data] = await db
         .select({ count: sql<number>`count(*)` })
-        .from(subscribersCount)
+        .from(subscriptions)
         .where(
           and(
-            eq(subscribersCount.viewerId, viewerId),
-            eq(subscribersCount.creatorId, video.creatorId)
+            eq(subscriptions.viewerId, viewerId),
+            eq(subscriptions.creatorId, video.creatorId)
           )
         );
 
+        // if it exists, return true else false
       return data.count > 0;
     }),
 });

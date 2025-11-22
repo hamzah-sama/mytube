@@ -17,7 +17,7 @@ export const SubscribeButton = ({ video }: Props) => {
   const { userId: clerkUserId } = useAuth();
 
   const createSubscriber = useMutation(
-    trpc.subscriberCount.create.mutationOptions({
+    trpc.subscription.create.mutationOptions({
       onSuccess: () => {
         queryClient.invalidateQueries(
           trpc.video.getOne.queryOptions({
@@ -26,7 +26,7 @@ export const SubscribeButton = ({ video }: Props) => {
         );
 
         queryClient.invalidateQueries(
-          trpc.subscriberCount.isSubscribed.queryOptions({
+          trpc.subscription.isSubscribed.queryOptions({
             videoId: video.id,
           })
         );
@@ -46,7 +46,7 @@ export const SubscribeButton = ({ video }: Props) => {
   };
 
   const { data: isSubscribed } = useQuery({
-    ...trpc.subscriberCount.isSubscribed.queryOptions({ videoId: video.id }),
+    ...trpc.subscription.isSubscribed.queryOptions({ videoId: video.id }),
     enabled: !!clerkUserId,
   });
 
