@@ -9,7 +9,7 @@ interface Props {
 export const VideoThumbnail = ({ thumbnail, preview, duration }: Props) => {
   return (
     <div className="relative group">
-      <div className="relative w-full aspect-video rounded-xl overflow-hidden">
+      <div className="relative w-full aspect-video rounded-xl overflow-hidden group-hover:rounded-none transition-all duration-300">
         <Image
           src={thumbnail ? thumbnail : "/placeholder.svg"}
           alt="thumbnail"

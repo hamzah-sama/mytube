@@ -1,7 +1,16 @@
-"use client"
+"use client";
 
-
-import { FlameIcon, HistoryIcon, HomeIcon, Inbox, ListVideoIcon, PlaySquareIcon, Search, Settings, ThumbsUpIcon } from "lucide-react";
+import {
+  FlameIcon,
+  HistoryIcon,
+  HomeIcon,
+  Inbox,
+  ListVideoIcon,
+  PlaySquareIcon,
+  Search,
+  Settings,
+  ThumbsUpIcon,
+} from "lucide-react";
 
 import {
   Sidebar,
@@ -15,12 +24,14 @@ import {
   SidebarSeparator,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
+import { useAuth, useClerk } from "@clerk/nextjs";
+import { toast } from "sonner";
 
 // Menu items.
 const mainItems = [
   {
     title: "Home",
-    url: "#",
+    url: "/",
     icon: HomeIcon,
   },
   {
@@ -57,6 +68,8 @@ const PersonalItems = [
 ];
 
 export const LayoutSidebar = () => {
+  const { isSignedIn } = useAuth();
+  const clerk = useClerk();
   return (
     <Sidebar collapsible="icon" className="pt-16 z-40 border-none">
       <SidebarContent className="bg-background">
@@ -65,7 +78,20 @@ export const LayoutSidebar = () => {
             <SidebarMenu>
               {mainItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild tooltip={item.title} isActive={false} onClick={()=>{}}>
+                  <SidebarMenuButton
+                    asChild
+                    tooltip={item.title}
+                    isActive={false}
+                    onClick={(e) => {
+                      if (!isSignedIn && item.auth) {
+                        e.preventDefault();
+                        toast.info(
+                          "You need to be signed in to access this section."
+                        );
+                        return clerk.openSignIn();
+                      }
+                    }}
+                  >
                     <Link href={item.url} className="flex items-center gap-4">
                       <item.icon />
                       <span>{item.title}</span>
@@ -75,13 +101,28 @@ export const LayoutSidebar = () => {
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
-          <SidebarSeparator className="my-2"/>
-          <SidebarGroupLabel className="text-muted-foreground">You</SidebarGroupLabel>
+          <SidebarSeparator className="my-2" />
+          <SidebarGroupLabel className="text-muted-foreground">
+            You
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {PersonalItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild tooltip={item.title} isActive={false} onClick={()=>{}}>
+                  <SidebarMenuButton
+                    asChild
+                    tooltip={item.title}
+                    isActive={false}
+                    onClick={(e) => {
+                      if (!isSignedIn && item.auth) {
+                        e.preventDefault();
+                        toast.info(
+                          "You need to be signed in to access this section."
+                        );
+                        return clerk.openSignIn();
+                      }
+                    }}
+                  >
                     <Link href={item.url} className="flex items-center gap-4">
                       <item.icon />
                       <span>{item.title}</span>
