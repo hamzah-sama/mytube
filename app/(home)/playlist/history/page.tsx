@@ -37,9 +37,7 @@ const PageSkeleton = () => {
       <p className="text-sm text-muted-foreground mb-5">
         Videos you have watched
       </p>
-      <div className="flex gap-4">
         <VideoRowSkeleton />
-      </div>
     </div>
   );
 };

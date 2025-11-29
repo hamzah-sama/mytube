@@ -13,8 +13,8 @@ export const HomeView = async () => {
     <HydrationBoundary state={dehydrate(queryClient)}>
       <ErrorBoundary
         fallback={
-          <p className="flex justify-center animate-spin">
-            <Loader2Icon />
+          <p className="flex justify-center text-muted-foreground">
+            Something went wrong
           </p>
         }
       >

@@ -15,7 +15,7 @@ export const LikedVideos = () => {
         Your favorite videos all in one place
       </p>
 
-      {data.length === 0 ? (
+      {data?.length === 0 ? (
         <p className="text-muted-foreground text-center pt-4">
           You have no liked videos yet.
         </p>

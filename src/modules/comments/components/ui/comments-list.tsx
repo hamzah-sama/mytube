@@ -154,7 +154,7 @@ export const CommentsList = ({ data, index, videoPlaybackId }: Props) => {
           />
         )}
         {replies.length > 0 && (
-          <p className="text-blue-600 pl-14 -translate-y-4">
+          <div className="text-blue-600 pl-14 -translate-y-4">
             <Button
               variant="ghost"
               onClick={() => setOpenReplylist((prev) => !prev)}
@@ -167,7 +167,7 @@ export const CommentsList = ({ data, index, videoPlaybackId }: Props) => {
               {replies.length}
               <span>{replies.length === 1 ? "reply" : "replies"}</span>
             </Button>
-          </p>
+          </div>
         )}
         {isOpenReplylist && (
           <div className="pl-14">

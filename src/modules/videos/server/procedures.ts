@@ -208,8 +208,8 @@ export const videoRouter = createTRPCRouter({
     // get the creatorIds of the subscriptions
     const subscriptionCreatorIds = getSubscriptions.map((sub) => sub.creatorId);
 
-    // if the user is not subscribed to any creators, no need to query for videos
-    if (subscriptionCreatorIds.length === 0) return;
+    // if the user is not subscribed to any creators, return an empty array
+    if (subscriptionCreatorIds.length === 0) return [];
 
     // fetch all videos with additional user and count info from the subscribed creators
     const data = await db

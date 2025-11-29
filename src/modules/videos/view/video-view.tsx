@@ -3,7 +3,7 @@ import { CommentView } from "@/modules/comments/components/view/comment-view";
 import { VideoError } from "@/modules/videos/components/video-error";
 import { VideoSection } from "@/modules/videos/components/video-section";
 import { VideoSkeleton } from "@/modules/videos/components/skeleton/video-skeleton";
-import { SugestionSection } from "@/modules/videos/components/video-sugestion";
+import { SugestionSection } from "@/modules/videos/components/video-suggestion";
 import { getQueryClient, trpc } from "@/trpc/server";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { Suspense } from "react";
