@@ -7,6 +7,7 @@ import {
   viewCount,
   like,
   dislike,
+  history,
 } from "@/db/schema";
 import {
   baseProcedure,
@@ -20,6 +21,7 @@ import {
   desc,
   eq,
   getTableColumns,
+  ilike,
   inArray,
   not,
   or,
@@ -28,20 +30,52 @@ import {
 import z from "zod";
 
 export const videoRouter = createTRPCRouter({
-  // get all videos to display on home feed
-  getMany: baseProcedure.query(async () => {
-    const data = await db
-      .select({
-        ...getTableColumns(videos),
-        user: getTableColumns(users),
-        count: db.$count(viewCount, eq(viewCount.videoId, videos.id)),
-      })
-      .from(videos)
-      .where(eq(videos.visibility, "public"))
-      .innerJoin(users, eq(videos.userId, users.id))
-      .orderBy(desc(videos.createdAt), desc(videos.id));
-    return data;
-  }),
+  // get all videos to display on home feed with category filter
+  getMany: baseProcedure
+    .input(z.object({ categoryId: z.string().nullish() }))
+    .query(async ({ input }) => {
+      const { categoryId } = input;
+      console.log("server : ", categoryId);
+      const data = await db
+        .select({
+          ...getTableColumns(videos),
+          user: getTableColumns(users),
+          count: db.$count(viewCount, eq(viewCount.videoId, videos.id)),
+        })
+        .from(videos)
+        .where(
+          and(
+            eq(videos.visibility, "public"),
+            categoryId ? eq(videos.categoryId, categoryId) : undefined
+          )
+        )
+        .innerJoin(users, eq(videos.userId, users.id))
+        .orderBy(desc(videos.createdAt), desc(videos.id));
+      return data;
+    }),
+
+  search: baseProcedure
+    .input(z.object({ query: z.string() }))
+    .query(async ({ input }) => {
+      const { query } = input;
+
+      const data = await db
+        .select({
+          ...getTableColumns(videos),
+          user: getTableColumns(users),
+          count: db.$count(viewCount, eq(viewCount.videoId, videos.id)),
+        })
+        .from(videos)
+        .where(
+          or(
+            ilike(videos.title, `%${query}%`),
+            ilike(videos.description, `%${query}%`),
+            ilike(users.name, `%${query}%`)
+          )
+        )
+        .innerJoin(users, eq(videos.userId, users.id));
+      return data;
+    }),
 
   // get specific video
   getOne: baseProcedure
@@ -174,6 +208,9 @@ export const videoRouter = createTRPCRouter({
     // get the creatorIds of the subscriptions
     const subscriptionCreatorIds = getSubscriptions.map((sub) => sub.creatorId);
 
+    // if the user is not subscribed to any creators, no need to query for videos
+    if (subscriptionCreatorIds.length === 0) return;
+
     // fetch all videos with additional user and count info from the subscribed creators
     const data = await db
       .select({
@@ -197,12 +234,20 @@ export const videoRouter = createTRPCRouter({
   getLikedVideos: protectedProcedure.query(async ({ ctx }) => {
     const { userId } = ctx.auth;
 
+    if (!userId) return;
+    // get all liked videos of the authenticated user
     const likedVideos = await db
-      .select({ videoId: like.videoId, createdAt: like.createdAt })
+      .select({ videoId: like.videoId })
       .from(like)
       .where(eq(like.userId, userId));
 
+    // get the videoIds of the liked videos
     const videoIds = likedVideos.map((video) => video.videoId);
+
+    // if the user has not liked any videos, return an empty array
+    if (videoIds.length === 0) return [];
+
+    // fetch all videos with additional user and count info from the liked videos with ordering by most recently liked
     const data = await db
       .select({
         ...getTableColumns(videos),
@@ -217,6 +262,40 @@ export const videoRouter = createTRPCRouter({
         and(eq(like.videoId, videos.id), eq(like.userId, userId))
       )
       .orderBy(desc(like.createdAt), desc(videos.id));
+
+    return data;
+  }),
+
+  getHistory: protectedProcedure.query(async ({ ctx }) => {
+    const { userId } = ctx.auth;
+    if (!userId) return;
+
+    // get all history of the authenticated user
+    const historyVideo = await db
+      .select()
+      .from(history)
+      .where(eq(history.userId, userId));
+
+    const videoIds = historyVideo.map((video) => video.videoId);
+    // if the user has not watched any videos, return an empty array
+    if (videoIds.length === 0) return [];
+
+    // fetch all videos with additional user and count info
+    const data = await db
+      .select({
+        ...getTableColumns(videos),
+        user: getTableColumns(users),
+        count: db.$count(viewCount, eq(viewCount.videoId, videos.id)),
+        historyCreatedDate: history.createdAt,
+      })
+      .from(videos)
+      .where(and(eq(videos.visibility, "public"), inArray(videos.id, videoIds)))
+      .innerJoin(users, eq(videos.userId, users.id))
+      .innerJoin(
+        history,
+        and(eq(history.userId, userId), eq(history.videoId, videos.id))
+      )
+      .orderBy(desc(history.createdAt), desc(videos.id));
     return data;
   }),
 });

@@ -13,7 +13,8 @@ export const SugestionSection = ({ videoPlaybackId }: Props) => {
     trpc.video.getSuggestions.queryOptions({ videoPlaybackId })
   );
   return (
-    <div className="flex lg:flex-col gap-5 overflow-x-auto">
+    <div className="flex lg:flex-col gap-5 overflow-x-auto min-w-[400px]">
+      {data.length === 0 && <p className="text-muted-foreground text-center">No videos suggestions</p>}
       {data.map((video) => (
         <VideoCard key={video.id} data={video} />
       ))}

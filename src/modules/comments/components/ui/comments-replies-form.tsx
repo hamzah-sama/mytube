@@ -70,7 +70,7 @@ export const CommentsRepliesForm = ({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(submitComment)}
-        className="flex flex-col space-y-4"
+        className="flex flex-col space-y-4 pl-14"
       >
         <div className="flex items-center gap-4">
           <div className="relative h-7 w-8 rounded-full overflow-hidden">

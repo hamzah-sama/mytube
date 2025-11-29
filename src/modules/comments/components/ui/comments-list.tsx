@@ -2,16 +2,10 @@ import { Button } from "@/components/ui/button";
 import { commentType } from "@/type";
 import { formatDistanceToNow } from "date-fns";
 import {
-  ArrowDownRight,
-  ArrowDownRightIcon,
-  ChevronDown,
   ChevronDownIcon,
   ChevronUpIcon,
-  CircleArrowDownIcon,
-  LucideCircleArrowOutDownRight,
   LucideSquareArrowOutDownRight,
   MoreVerticalIcon,
-  SquareArrowDownRightIcon,
   Trash2Icon,
 } from "lucide-react";
 import Image from "next/image";
@@ -80,7 +74,7 @@ export const CommentsList = ({ data, index, videoPlaybackId }: Props) => {
       <ConfirmationModal
         open={openModal}
         onOpenChange={setOpenModal}
-        desription="this action cannot be undone, are you sure want to delete this comment permanently?"
+        description="this action cannot be undone, are you sure want to delete this comment permanently?"
         onConfirm={() =>
           deleteComment.mutate({ commentId: comment.id, videoPlaybackId })
         }
@@ -129,65 +123,10 @@ export const CommentsList = ({ data, index, videoPlaybackId }: Props) => {
                   Reply
                 </Button>
               </div>
-              <div className="flex-1 min-w-[700px]">
-                {isOpenReplyForm && (
-                  <CommentsRepliesForm
-                    commentId={comment.id}
-                    videoPlaybackId={videoPlaybackId}
-                    onSuccess={() => {
-                      setOpenReplyForm(false);
-                      setOpenReplylist(true);
-                    }}
-                    onCancel={() => setOpenReplyForm(false)}
-                  />
-                )}
-              </div>
-              {replies.length > 0 && (
-                <p className="text-blue-600">
-                  <Button
-                    variant="ghost"
-                    onClick={() => setOpenReplylist((prev) => !prev)}
-                  >
-                    {isOpenReplylist ? (
-                      <ChevronUpIcon className="size-4" />
-                    ) : (
-                      <ChevronDownIcon className="size-4" />
-                    )}
-                    {replies.length}
-                    <span>{replies.length === 1 ? "reply" : "replies"}</span>
-                  </Button>
-                </p>
-              )}
-
-              {isOpenReplylist && (
-                <div className="min-w-[700px]">
-                  {visibleReplies.map((reply) => (
-                    <ReplyLists
-                      data={reply}
-                      key={reply.id}
-                      videoClerkId={videoOwnerId?.clerkId}
-                      commentclerkId={comment.user.clerkId}
-                      videoPlaybackId={videoPlaybackId}
-                      commentId={comment.id}
-                    />
-                  ))}
-
-                  {visibleCount < replies.length && (
-                    <Button
-                      variant="ghost"
-                      className="text-blue-500 text-xs hover:bg-blue-50"
-                      onClick={() => setVisibleCount(visibleCount + 2)}
-                    >
-                      <LucideSquareArrowOutDownRight className="size-3" />
-                      Load more replies
-                    </Button>
-                  )}
-                </div>
-              )}
             </div>
           </div>
           {canDeleteComment && !!user && (
-            <DropdownMenu modal>
+            <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="rounded-full">
                   <MoreVerticalIcon />
@@ -203,6 +142,58 @@ export const CommentsList = ({ data, index, videoPlaybackId }: Props) => {
             </DropdownMenu>
           )}
         </div>
+        {isOpenReplyForm && (
+          <CommentsRepliesForm
+            commentId={comment.id}
+            videoPlaybackId={videoPlaybackId}
+            onSuccess={() => {
+              setOpenReplyForm(false);
+              setOpenReplylist(true);
+            }}
+            onCancel={() => setOpenReplyForm(false)}
+          />
+        )}
+        {replies.length > 0 && (
+          <p className="text-blue-600 pl-14 -translate-y-4">
+            <Button
+              variant="ghost"
+              onClick={() => setOpenReplylist((prev) => !prev)}
+            >
+              {isOpenReplylist ? (
+                <ChevronUpIcon className="size-4" />
+              ) : (
+                <ChevronDownIcon className="size-4" />
+              )}
+              {replies.length}
+              <span>{replies.length === 1 ? "reply" : "replies"}</span>
+            </Button>
+          </p>
+        )}
+        {isOpenReplylist && (
+          <div className="pl-14">
+            {visibleReplies.map((reply) => (
+              <ReplyLists
+                data={reply}
+                key={reply.id}
+                videoClerkId={videoOwnerId?.clerkId}
+                commentclerkId={comment.user.clerkId}
+                videoPlaybackId={videoPlaybackId}
+                commentId={comment.id}
+              />
+            ))}
+
+            {visibleCount < replies.length && (
+              <Button
+                variant="ghost"
+                className="text-blue-500 text-xs hover:bg-blue-50"
+                onClick={() => setVisibleCount(visibleCount + 2)}
+              >
+                <LucideSquareArrowOutDownRight className="size-3" />
+                Load more replies
+              </Button>
+            )}
+          </div>
+        )}
       </div>
     </>
   );

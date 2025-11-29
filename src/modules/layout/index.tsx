@@ -16,7 +16,7 @@ const Layout = ({ children }: Props) => {
           <main className="flex-1 overflow-y-auto">{children}</main>
         </div>
       </div>
-    </SidebarProvider>
+    // </SidebarProvider>
   );
 };
 

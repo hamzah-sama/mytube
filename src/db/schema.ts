@@ -89,6 +89,23 @@ export const viewCount = pgTable(
   })
 );
 
+export const history = pgTable(
+  "history",
+  {
+    userId: uuid("user_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    videoId: uuid("video_id")
+      .references(() => videos.id, { onDelete: "cascade" })
+      .notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.userId, table.videoId] }),
+  })
+);
+
 export const subscriptions = pgTable(
   "subscriptions",
   {
@@ -156,7 +173,7 @@ export const comments = pgTable(
       foreignKey({
         columns: [t.parentId],
         foreignColumns: [t.id],
-        name: 'comments_parent_id_fkey',
+        name: "comments_parent_id_fkey",
       }).onDelete("cascade"),
     ];
   }
@@ -169,7 +186,7 @@ export const commetsRelation = relations(comments, ({ one, many }) => ({
     references: [comments.id],
   }),
   replies: many(comments, {
-    relationName: 'comments_parent_id_fkey',
+    relationName: "comments_parent_id_fkey",
   }),
 }));
 

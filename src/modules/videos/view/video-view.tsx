@@ -27,7 +27,7 @@ export const VideoView = ({ videoPlaybackId }: Props) => {
   );
   return (
     <div className="flex flex-col lg:flex-row gap-6">
-      <div className="flex-1 min-w-0">
+      <div className="flex-1">
         <HydrationBoundary state={dehydrate(queryClient)}>
           <ErrorBoundary fallback={<VideoError />}>
             <Suspense fallback={<VideoSkeleton />}>

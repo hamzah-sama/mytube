@@ -8,7 +8,7 @@ const Page = async ({ params }: Props) => {
   const { videoPlaybackId } = await params;
 
   return (
-    <div className="flex flex-col mx-auto max-w-[1700px] mb-10 p-2 overflow-hidden">
+    <div className="flex flex-col mx-auto max-w-[1700px] mb-10 p-2">
       <VideoView videoPlaybackId={videoPlaybackId} />
     </div>
   );

@@ -1,5 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { TrendingView } from "@/modules/trending/ui/view/trending-view";
+import { VideoRowSkeleton } from "@/modules/videos/components/skeleton/video-skeleton";
 import { getQueryClient, trpc } from "@/trpc/server";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { Suspense } from "react";
@@ -11,7 +12,11 @@ const Page = () => {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <ErrorBoundary fallback={<div className="flex justify-center">Something went wrong</div>}>
+      <ErrorBoundary
+        fallback={
+          <div className="flex justify-center">Something went wrong</div>
+        }
+      >
         <Suspense fallback={<PageSkeleton />}>
           <TrendingView />
         </Suspense>
@@ -29,30 +34,7 @@ const PageSkeleton = () => {
       <p className="text-sm text-muted-foreground mb-5">
         Most popular videos at the moment
       </p>
-      <div className="flex flex-col w-[90%] gap-3 mb-10">
-        {Array.from({ length: 5 }).map((_, index) => (
-          <div className="p-2" key={index}>
-            <div className="flex flex-col lg:flex-row gap-3 w-full">
-              <div className="relative aspect-video w-full lg:w-[400px] shrink-0">
-                <Skeleton className="w-full h-full rounded-xl" />
-              </div>
-              <div className="flex items-start justify-between w-full gap-2">
-                <div className="flex flex-col flex-1 min-w-0 gap-2">
-                  <Skeleton className="w-full h-6 rounded-md" />
-                  <Skeleton className="w-1/2 h-4 rounded-md" />
-                  <div className="flex gap-2">
-                    <Skeleton className="size-7 rounded-full shrink-0" />
-                    <Skeleton className="w-1/4 h-4 rounded-md" />
-                  </div>
-                  <Skeleton className="w-full h-12 rounded-md" />
-                </div>
-
-                <Skeleton className="size-10 rounded-full" />
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+      <VideoRowSkeleton />
     </div>
   );
 };

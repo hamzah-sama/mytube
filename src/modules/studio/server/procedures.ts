@@ -167,6 +167,7 @@ export const studioProcedures = createTRPCRouter({
           title: input.title,
           description: input.description,
           visibility: input.visibility,
+          categoryId: input.categoryId,
         })
         .where(and(eq(videos.id, input.id), eq(videos.userId, userId)))
         .returning();

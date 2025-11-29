@@ -73,7 +73,7 @@ export const ReplyLists = ({
       <ConfirmationModal
         open={openModal}
         onOpenChange={setOpenModal}
-        desription="this action cannot be undone, are you sure want to delete this reply permanently?"
+        description="this action cannot be undone, are you sure want to delete this reply permanently?"
         onConfirm={() =>
           deleteComment.mutate({ commentId: data.id, videoPlaybackId })
         }
@@ -125,7 +125,7 @@ export const ReplyLists = ({
             </div>
           </div>
           {canDeleteComment && !!user && (
-            <DropdownMenu modal>
+            <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="rounded-full">
                   <MoreVerticalIcon />

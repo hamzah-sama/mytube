@@ -7,6 +7,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 export const LikedVideos = () => {
   const trpc = useTRPC();
   const { data } = useSuspenseQuery(trpc.video.getLikedVideos.queryOptions());
+
   return (
     <div className="mx-auto max-w-[2400px] px-4">
       <h1 className="text-3xl font-bold">Liked videos</h1>
@@ -14,14 +15,14 @@ export const LikedVideos = () => {
         Your favorite videos all in one place
       </p>
 
-      {data?.length === 0 ? (
+      {data.length === 0 ? (
         <p className="text-muted-foreground text-center pt-4">
           You have no liked videos yet.
         </p>
       ) : (
         <div className="flex flex-col w-[90%] gap-3 mb-10">
-          {data.map((video) => (
-            <VideoCardRow key={video.id} data={video} />
+          {data?.map((video) => (
+            <VideoCardRow key={video.id} data={video} isLikePage />
           ))}
         </div>
       )}
