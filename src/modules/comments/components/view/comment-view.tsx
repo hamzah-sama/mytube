@@ -45,19 +45,19 @@ export const CommentView = ({ videoPlaybackId }: Props) => {
   const isLoadingMore = visibleCounts < data.getComments.length;
 
   return (
-    <div className="p-2 flex flex-col gap-3">
-      <h1 className="font-bold text-xl">{data.getComments.length + data.getReplies.length} Comment</h1>
+    <div className="p-2 flex flex-col">
+      <h1 className="font-bold text-xl">
+        {data.getComments.length + data.getReplies.length} Comment
+      </h1>
       <CommentsForm videoPlaybackId={videoPlaybackId} />
-      <div>
-        {visibleComments.map((comment, index) => (
-          <CommentsList
-            key={comment.id}
-            data={data}
-            index={index}
-            videoPlaybackId={videoPlaybackId}
-          />
-        ))}
-      </div>
+      {visibleComments.map((comment, index) => (
+        <CommentsList
+          key={comment.id}
+          data={data}
+          index={index}
+          videoPlaybackId={videoPlaybackId}
+        />
+      ))}
       {isLoadingMore && (
         <div ref={loaderRef} className="flex items-center justify-center">
           <Loader2Icon className="size-4 animate-spin" />

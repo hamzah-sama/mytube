@@ -95,7 +95,7 @@ export const VideoManagementView = ({ videoId }: Props) => {
       <ConfirmationModal
         open={openModal}
         onOpenChange={setOpenModal}
-        desription="this action cannot be undone, are you sure want to delete this video permanently?"
+        description="this action cannot be undone, are you sure want to delete this video permanently?"
         onConfirm={() => handleDelete.mutate({ videoId })}
         isLoading={handleDelete.isPending}
       />

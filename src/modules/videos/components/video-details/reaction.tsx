@@ -25,7 +25,7 @@ export const VideoReaction = ({
   const queryClient = useQueryClient();
 
   const handleLiked = useMutation(
-    trpc.reactionCount.liked.mutationOptions({
+    trpc.videoReaction.liked.mutationOptions({
       onSuccess: () => {
         queryClient.invalidateQueries(
           trpc.video.getOne.queryOptions({
@@ -33,10 +33,10 @@ export const VideoReaction = ({
           })
         );
         queryClient.invalidateQueries(
-          trpc.reactionCount.isLiked.queryOptions({ videoId })
+          trpc.videoReaction.isLiked.queryOptions({ videoId })
         );
         queryClient.invalidateQueries(
-          trpc.reactionCount.isDisliked.queryOptions({ videoId })
+          trpc.videoReaction.isDisliked.queryOptions({ videoId })
         );
       },
       onError: (err) => {
@@ -49,7 +49,7 @@ export const VideoReaction = ({
   );
 
   const handleDisliked = useMutation(
-    trpc.reactionCount.disliked.mutationOptions({
+    trpc.videoReaction.disliked.mutationOptions({
       onSuccess: () => {
         queryClient.invalidateQueries(
           trpc.video.getOne.queryOptions({
@@ -57,10 +57,10 @@ export const VideoReaction = ({
           })
         );
         queryClient.invalidateQueries(
-          trpc.reactionCount.isDisliked.queryOptions({ videoId })
+          trpc.videoReaction.isDisliked.queryOptions({ videoId })
         );
         queryClient.invalidateQueries(
-          trpc.reactionCount.isLiked.queryOptions({ videoId })
+          trpc.videoReaction.isLiked.queryOptions({ videoId })
         );
       },
       onError: (err) => {
@@ -73,13 +73,13 @@ export const VideoReaction = ({
   );
 
   const { data: isLiked } = useQuery({
-    ...trpc.reactionCount.isLiked.queryOptions({
+    ...trpc.videoReaction.isLiked.queryOptions({
       videoId,
     }),
     enabled: !!videoPlaybackId,
   });
   const { data: isDisliked } = useQuery({
-    ...trpc.reactionCount.isDisliked.queryOptions({
+    ...trpc.videoReaction.isDisliked.queryOptions({
       videoId,
     }),
     enabled: !!videoPlaybackId,

@@ -23,7 +23,7 @@ export const SubscriptionsView = () => {
         </p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 mb-10">
-          {data.map((video) => (
+          {data?.map((video) => (
             <VideoCardColumn key={video.id} data={video} />
           ))}
         </div>

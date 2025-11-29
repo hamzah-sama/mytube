@@ -2,7 +2,11 @@
 
 import { VideoCardRow } from "@/components/video-card-row";
 import { useTRPC } from "@/trpc/client";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 
 export const TrendingView = () => {
   const trpc = useTRPC();

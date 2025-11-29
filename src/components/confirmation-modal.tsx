@@ -15,23 +15,27 @@ interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void;
-  desription: string;
+  description: string;
   isLoading?: boolean;
+  confirmText?: string;
+  loadingConfirmText?: string;
 }
 
 export const ConfirmationModal = ({
   open,
   onOpenChange,
   onConfirm,
-  desription,
+  description,
   isLoading,
+  confirmText = "Delete",
+  loadingConfirmText = "Deleting...",
 }: Props) => {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-          <AlertDialogDescription>{desription}</AlertDialogDescription>
+          <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel disabled={isLoading}>Cancel</AlertDialogCancel>
@@ -45,11 +49,11 @@ export const ConfirmationModal = ({
               <span className="inline-flex items-center gap-2">
                 <Loader2Icon className="animate-spin size-4" />
                 <span className="text-sm text-muted-foreground">
-                  Deleting...
+                  {loadingConfirmText}
                 </span>
               </span>
             ) : (
-              "Delete"
+              <span>{confirmText}</span>
             )}
           </Button>
         </AlertDialogFooter>

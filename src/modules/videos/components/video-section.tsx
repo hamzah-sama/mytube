@@ -26,7 +26,7 @@ export const VideoSection = ({ videoPlaybackId }: Props) => {
     trpc.video.getOne.queryOptions({ videoPlaybackId })
   );
 
- const createViewCount = useMutation(
+  const createViewCount = useMutation(
     trpc.viewCount.create.mutationOptions({
       onSuccess: () => {
         queryClient.invalidateQueries(
@@ -35,9 +35,12 @@ export const VideoSection = ({ videoPlaybackId }: Props) => {
       },
     })
   );
+
+  const createHistory = useMutation(trpc.history.create.mutationOptions());
   const handlePlay = () => {
     if (!isSignedIn) return;
     createViewCount.mutate({ videoId: video.id });
+    createHistory.mutate({ videoId: video.id });
   };
 
   return (

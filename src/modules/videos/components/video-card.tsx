@@ -1,14 +1,15 @@
-import { Button } from "@/components/ui/button";
 import { VideoThumbnail } from "@/components/video-thumbnail";
 import { videoCardType } from "@/type";
 import { formatDistanceToNow } from "date-fns";
-import { MoreVerticalIcon } from "lucide-react";
 import Link from "next/link";
+import { VideoDropdownMenu } from "./video-dropdown-menu";
+import { useUser } from "@clerk/nextjs";
 
 interface Props {
   data: videoCardType;
 }
 export const VideoCard = ({ data }: Props) => {
+  const {user} = useUser()
   return (
     <Link href={`/video/${data.muxPlaybackId}`}>
       <div className="lg:w-full flex justify-between">
@@ -33,9 +34,7 @@ export const VideoCard = ({ data }: Props) => {
                 </p>
               </div>
             </div>
-            <Button variant="ghost" size="icon">
-              <MoreVerticalIcon className="size-4" />
-            </Button>
+            <VideoDropdownMenu userLoginId={user?.id} videoOwnerId={data.user.clerkId} variant="row"/>
           </div>
         </div>
       </div>
