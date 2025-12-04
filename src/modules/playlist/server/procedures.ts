@@ -16,8 +16,10 @@ import z from "zod";
 export const playlistRouter = createTRPCRouter({
   getOne: protectedProcedure
     .input(z.object({ playlistId: z.string() }))
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
+      const { userId } = ctx.auth;
       const { playlistId } = input;
+
       if (!playlistId) {
         throw new TRPCError({
           code: "BAD_REQUEST",
@@ -27,7 +29,12 @@ export const playlistRouter = createTRPCRouter({
       const [data] = await db
         .select()
         .from(playlist)
-        .where(eq(playlist.id, playlistId));
+        .where(
+          and(
+            eq(playlist.id, playlistId),
+            or(eq(playlist.visibility, "public"), eq(playlist.userId, userId))
+          )
+        );
       return data;
     }),
   getMany: protectedProcedure.query(async ({ ctx }) => {
@@ -105,7 +112,7 @@ export const playlistRouter = createTRPCRouter({
   delete: protectedProcedure
     .input(z.object({ playlistId: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const { userId, clerkUserId } = ctx.auth;
+      const { userId } = ctx.auth;
       const { playlistId } = input;
 
       if (!playlistId) {
@@ -116,7 +123,7 @@ export const playlistRouter = createTRPCRouter({
       }
       const [data] = await db
         .delete(playlist)
-        .where(and(eq(playlist.id, playlistId), eq(users.clerkId, clerkUserId)))
+        .where(and(eq(playlist.id, playlistId), eq(playlist.userId, userId)))
         .returning();
 
       return data;

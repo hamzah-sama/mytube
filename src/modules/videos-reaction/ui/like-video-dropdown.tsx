@@ -49,7 +49,7 @@ export const LikeVideoDropdown = ({
       />
       <PlaylistModal
         open={openPlaylistModal}
-        setOPen={setOpenPlaylistModal}
+        setOpen={setOpenPlaylistModal}
         videoId={videoId}
       />
       <Dropdown>
