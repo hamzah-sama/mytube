@@ -2,7 +2,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { PlaylistView } from "@/modules/playlist/ui/view/playlist-view";
 import { VideoError } from "@/modules/videos/components/video-error";
 import { getQueryClient, trpc } from "@/trpc/server";
-import { useUser } from "@clerk/nextjs";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
@@ -33,7 +32,7 @@ const PageSkeleton = () => {
             Playlists you have created
           </p>
         </div>
-        <Skeleton className="h-4 w-30" />
+        <Skeleton className="h-4 w-32" />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-10">

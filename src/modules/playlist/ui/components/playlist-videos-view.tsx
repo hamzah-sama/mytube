@@ -39,6 +39,9 @@ export const PlaylistVideosView = ({ playlistId }: Props) => {
         router.push("/playlist");
         toast.success("Playlist deleted successfully");
       },
+      onError: (err) => {
+        toast.error(err.message);
+      },
     })
   );
   return (
@@ -94,7 +97,7 @@ export const PlaylistVideosView = ({ playlistId }: Props) => {
 
         {data?.length === 0 ? (
           <p className="text-muted-foreground text-center pt-4">
-            {`${playlist?.name} have no videos yet.`}
+            {`${playlist?.name} has no videos yet.`}
           </p>
         ) : (
           <div className="flex flex-col w-[90%] gap-3 mb-10">
@@ -102,7 +105,6 @@ export const PlaylistVideosView = ({ playlistId }: Props) => {
               <VideoCardRow
                 key={video.id}
                 data={video}
-                playlistId={playlistId}
                 dropdown={<PlaylistVideoDropdown videoId={video.id} userLoginId={user?.id} videoOwnerId={video.user.clerkId}
                 playlistId={playlistId}
                 />}

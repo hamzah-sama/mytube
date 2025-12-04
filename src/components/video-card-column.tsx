@@ -4,23 +4,14 @@ import { videoCardType } from "@/type";
 import { formatDistanceToNow } from "date-fns";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
-import { PlaylistModal } from "@/modules/playlist/ui/components/playlist-modal";
 
 interface Props {
   data: videoCardType;
   dropdown: React.ReactNode;
 }
 export const VideoCardColumn = ({ data, dropdown }: Props) => {
-  const [openPlaylistModal, setOpenPlaylistModal] = useState(false);
-
   return (
     <div className=" relative group hover:bg-accent p-4 rounded-xl ">
-      <PlaylistModal
-        open={openPlaylistModal}
-        setOPen={setOpenPlaylistModal}
-        videoId={data.id}
-      />
       <Link
         href={`/video/${data.muxPlaybackId}`}
         className=" flex flex-col gap-3"

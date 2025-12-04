@@ -30,6 +30,7 @@ export const LikeVideoDropdown = ({
     trpc.videoReaction.liked.mutationOptions({
       onSuccess: () => {
         queryClient.invalidateQueries(trpc.video.getLikedVideos.queryOptions());
+        setOpenCancelLikeModal(false);
         toast.success("Like removed successfully");
       },
     })

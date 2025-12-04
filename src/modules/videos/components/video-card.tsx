@@ -37,7 +37,7 @@ export const VideoCard = ({ data, dropdown }: Props) => {
           </div>
         </div>
       </Link>
-      <div className="absolute lg:top-2 lg:right-2 bottom-15 right-2">{dropdown}</div>
+      <div className="absolute lg:top-2 lg:right-2 bottom-[60px] right-2">{dropdown}</div>
     </div>
   );
 };

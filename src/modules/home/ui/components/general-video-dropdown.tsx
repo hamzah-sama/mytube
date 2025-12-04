@@ -23,7 +23,7 @@ export const GeneralVideoDropdown = ({
     <>
       <PlaylistModal
         open={openPlaylistModal}
-        setOPen={setOpenPlaylistModal}
+        setOpen={setOpenPlaylistModal}
         videoId={videoId}
       />
       <Dropdown>

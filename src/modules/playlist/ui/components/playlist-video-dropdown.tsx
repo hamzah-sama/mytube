@@ -44,7 +44,7 @@ export const PlaylistVideoDropdown = ({
       <ConfirmationModal
         onOpenChange={setOpenRemovePlaylistModal}
         open={openRemovePlaylistModal}
-        description="Are you sure you want to remove video from your playlist ?, this action cannot be undone!"
+        description="Are you sure you want to remove this video from your playlist ?, this action cannot be undone!"
         onConfirm={() => handleRemovePlaylist.mutate({ videoId, playlistId })}
         isLoading={handleRemovePlaylist.isPending}
         confirmText="Remove"

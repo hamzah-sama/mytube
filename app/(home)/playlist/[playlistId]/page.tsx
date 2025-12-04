@@ -37,7 +37,7 @@ const PageSkeleton = () => {
     <div className="mx-auto max-w-[2400px] px-4">
       <div className="flex justify-between lg:pr-8">
         <div className="flex flex-col gap-4 mb-5">
-          <Skeleton className="h-4 w-30" />
+          <Skeleton className="h-4 w-32" />
           <Skeleton className="h-4 w-40" />
         </div>
         <Skeleton className="rounded-full size-6" />

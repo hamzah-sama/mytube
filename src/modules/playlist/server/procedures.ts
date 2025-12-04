@@ -105,7 +105,7 @@ export const playlistRouter = createTRPCRouter({
   delete: protectedProcedure
     .input(z.object({ playlistId: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const { userId } = ctx.auth;
+      const { userId, clerkUserId } = ctx.auth;
       const { playlistId } = input;
 
       if (!playlistId) {
@@ -116,7 +116,7 @@ export const playlistRouter = createTRPCRouter({
       }
       const [data] = await db
         .delete(playlist)
-        .where(and(eq(playlist.id, playlistId), eq(playlist.userId, userId)))
+        .where(and(eq(playlist.id, playlistId), eq(users.clerkId, clerkUserId)))
         .returning();
 
       return data;
@@ -148,8 +148,32 @@ export const playlistRouter = createTRPCRouter({
 
   getManyVideos: protectedProcedure
     .input(z.object({ playlistId: z.string() }))
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       const { playlistId } = input;
+
+      const { userId, clerkUserId } = ctx.auth;
+
+      // Verify user can access this playlist
+      const [playlistRecord] = await db
+        .select()
+        .from(playlist)
+        .innerJoin(users, eq(playlist.userId, users.id))
+        .where(
+          and(
+            eq(playlist.userId, userId),
+            or(
+              eq(users.clerkId, clerkUserId),
+              eq(playlist.visibility, "public")
+            )
+          )
+        );
+
+      if (!playlistRecord) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Playlist not found or access denied",
+        });
+      }
 
       const data = await db
         .select({
@@ -168,7 +192,8 @@ export const playlistRouter = createTRPCRouter({
 
   addVideo: protectedProcedure
     .input(z.object({ videoId: z.string(), playlistId: z.string() }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
+      const { userId } = ctx.auth;
       const { videoId, playlistId } = input;
       if (!videoId || !playlistId) {
         throw new TRPCError({
@@ -176,6 +201,21 @@ export const playlistRouter = createTRPCRouter({
           message: "Something went wrong",
         });
       }
+
+      // verify playlist belongs to user
+      const [playlistRecord] = await db
+        .select()
+        .from(playlist)
+        .where(and(eq(playlist.id, playlistId), eq(playlist.userId, userId)));
+
+      if (!playlistRecord) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Playlist not found",
+        });
+      }
+
+      // verify playlist exists
       const [existingRecord] = await db
         .select()
         .from(playlistVideos)
@@ -203,14 +243,30 @@ export const playlistRouter = createTRPCRouter({
 
   deleteVideo: protectedProcedure
     .input(z.object({ videoId: z.string(), playlistId: z.string() }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const { videoId, playlistId } = input;
+      const { userId } = ctx.auth;
+
       if (!videoId || !playlistId) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Something went wrong",
         });
       }
+
+      // verify playlist belongs to user
+      const [existingRecord] = await db
+        .select()
+        .from(playlist)
+        .where(and(eq(playlist.id, playlistId), eq(playlist.userId, userId)));
+
+      if (!existingRecord) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Playlist not found",
+        });
+      }
+
       const [data] = await db
         .delete(playlistVideos)
         .where(

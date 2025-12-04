@@ -24,7 +24,7 @@ export const PlaylistCard = ({ name, id, videosCount, thumbnail }: Props) => {
           />
           <div className="absolute bottom-1 right-1 bg-black/30 text-xs p-2 px-4 rounded-xl flex gap-2 items-center group-hover:bg-black">
             <ListIcon className="size-4" />
-            {videosCount} {videosCount <= 1 ? "video" : "videos"}
+            {videosCount} {videosCount === 1 ? "video" : "videos"}
           </div>
           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 text-white bg-black/70">
             <PlayIcon className="mr-2" />

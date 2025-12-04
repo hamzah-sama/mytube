@@ -13,19 +13,18 @@ import { CreatePlaylistForm } from "./create-playlist-form";
 
 interface Props {
   open: boolean;
-  setOPen: (open: boolean) => void; //for playlist modal
+  setOpen: (open: boolean) => void;
   videoId: string;
 }
-export const PlaylistModal = ({ open, setOPen, videoId }: Props) => {
+export const PlaylistModal = ({ open, setOpen, videoId }: Props) => {
   const trpc = useTRPC();
-  const queryClient = useQueryClient();
-  const [openModal, setOPenModal] = useState(false); // for create and add to playlist
+  const [openModal, setOpenModal] = useState(false); // for create and add to playlist
   const { data } = useSuspenseQuery(trpc.playlist.getMany.queryOptions());
 
   const addVideoToPlaylist = useMutation(
     trpc.playlist.addVideo.mutationOptions({
       onSuccess: () => {
-        setOPen(false);
+        setOpen(false);
         toast.success("Video added to playlist");
       },
       onError: (err) => {
@@ -37,12 +36,12 @@ export const PlaylistModal = ({ open, setOPen, videoId }: Props) => {
     <>
       <ResponsiveModal
         title="Create playlist"
-        onOpenChange={setOPenModal}
+        onOpenChange={setOpenModal}
         open={openModal}
       >
-        <CreatePlaylistForm setOpenModal={setOPenModal} />
+        <CreatePlaylistForm setOpenModal={setOpenModal} />
       </ResponsiveModal>
-      <ResponsiveModal title="Add to..." onOpenChange={setOPen} open={open}>
+      <ResponsiveModal title="Add to..." onOpenChange={setOpen} open={open}>
         <div className="flex flex-col gap-3">
           {data.map((playlist) => {
             return (
@@ -66,7 +65,7 @@ export const PlaylistModal = ({ open, setOPen, videoId }: Props) => {
               <Loader2Icon className="animate-spin size-4" />
             </p>
           )}
-          <Button className="mt-7" onClick={() => setOPenModal(true)}>
+          <Button className="mt-7" onClick={() => setOpenModal(true)}>
             <PlusIcon className="mr-2" />
             Create playlist
           </Button>

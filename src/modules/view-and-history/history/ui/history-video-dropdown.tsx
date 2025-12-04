@@ -4,6 +4,7 @@ import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { PlaylistModal } from "@/modules/playlist/ui/components/playlist-modal";
 import { useTRPC } from "@/trpc/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { error } from "console";
 import { ListIcon, SettingsIcon, XIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -30,7 +31,11 @@ export const HistoryVideoDropdown = ({
     trpc.history.delete.mutationOptions({
       onSuccess: () => {
         queryClient.invalidateQueries(trpc.video.getHistory.queryOptions());
+        setOpenRemoveHistoryModal(false);
         toast.success("video removed successfully");
+      },
+      onError: (err) => {
+        toast.error(err.message);
       },
     })
   );
