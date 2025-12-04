@@ -1,0 +1,40 @@
+"use client";
+
+import { VideoCardRow } from "@/components/video-card-row";
+import { GeneralVideoDropdown } from "@/modules/home/ui/components/general-video-dropdown";
+import { useTRPC } from "@/trpc/client";
+import { useUser } from "@clerk/nextjs";
+import { useSuspenseQuery } from "@tanstack/react-query";
+
+export const TrendingView = () => {
+  const { user } = useUser();
+  const trpc = useTRPC();
+  const { data } = useSuspenseQuery(trpc.video.getTrending.queryOptions());
+  return (
+    <div className="mx-auto max-w-[2400px] px-4">
+      <h1 className="text-3xl font-bold ">Trending</h1>
+      <p className="text-sm text-muted-foreground mb-5">
+        Most popular videos at the moment
+      </p>
+      <div className="flex flex-col w-[90%] gap-10 mb-10">
+        {data.map((video, index) => (
+          <div key={video.id} className="flex gap-2 items-center w-full">
+            <p className="text-2xl font-bold">#{index + 1}</p>
+            <div className="flex-1">
+              <VideoCardRow
+                data={video}
+                dropdown={
+                  <GeneralVideoDropdown
+                    userLoginId={user?.id}
+                    videoOwnerId={video.user.clerkId}
+                    videoId={video.id}
+                  />
+                }
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
