@@ -3,12 +3,15 @@
 import { VideoCardRow } from "@/components/video-card-row";
 import { useTRPC } from "@/trpc/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { useUser } from "@clerk/nextjs";
+import { GeneralVideoDropdown } from "../components/general-video-dropdown";
 
 interface Props {
   query: string;
 }
 export const SearchView = ({ query }: Props) => {
   const trpc = useTRPC();
+  const {user} = useUser()
 
   const { data } = useSuspenseQuery(trpc.video.search.queryOptions({ query }));
   return (
@@ -21,7 +24,8 @@ export const SearchView = ({ query }: Props) => {
           No videos found
         </p>
       ) : (
-        data.map((video) => <VideoCardRow key={video.id} data={video} />)
+        data.map((video) => <VideoCardRow key={video.id} data={video} 
+        dropdown={<GeneralVideoDropdown userLoginId={user?.id} videoOwnerId={video.user.clerkId} videoId={video.id} />} />)
       )}
     </>
   );

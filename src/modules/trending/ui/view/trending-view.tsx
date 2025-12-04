@@ -1,14 +1,13 @@
 "use client";
 
 import { VideoCardRow } from "@/components/video-card-row";
+import { GeneralVideoDropdown } from "@/modules/home/ui/components/general-video-dropdown";
 import { useTRPC } from "@/trpc/client";
-import {
-  useMutation,
-  useQueryClient,
-  useSuspenseQuery,
-} from "@tanstack/react-query";
+import { useUser } from "@clerk/nextjs";
+import { useSuspenseQuery } from "@tanstack/react-query";
 
 export const TrendingView = () => {
+  const { user } = useUser();
   const trpc = useTRPC();
   const { data } = useSuspenseQuery(trpc.video.getTrending.queryOptions());
   return (
@@ -21,7 +20,18 @@ export const TrendingView = () => {
         {data.map((video, index) => (
           <div key={video.id} className="flex gap-2 items-center w-full">
             <p className="text-2xl font-bold">#{index + 1}</p>
-            <VideoCardRow data={video} />
+            <div className="flex-1">
+              <VideoCardRow
+                data={video}
+                dropdown={
+                  <GeneralVideoDropdown
+                    userLoginId={user?.id}
+                    videoOwnerId={video.user.clerkId}
+                    videoId={video.id}
+                  />
+                }
+              />
+            </div>
           </div>
         ))}
       </div>

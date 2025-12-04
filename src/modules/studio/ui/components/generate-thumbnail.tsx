@@ -40,7 +40,6 @@ export const GenerateThumbnailModal = ({
         toast.info("Processing generate thumbnail");
       },
       onError: (err) => {
-        console.error("error nya: " + err);
         toast.error("Failed to generate thumbnail");
       },
     })

@@ -42,7 +42,7 @@ export const VideoSkeleton = () => {
 export const VideoRowSkeleton = () => {
   return (
     <div className="flex flex-col w-[90%] gap-3 mb-10">
-      {Array.from({ length: 5 }).map((_, index) => (
+      {Array.from({ length: 3 }).map((_, index) => (
         <div className="p-2" key={index}>
           <div className="flex flex-col lg:flex-row gap-3 w-full">
             <div className="relative aspect-video w-full lg:w-[400px] shrink-0">
@@ -71,7 +71,7 @@ export const VideoRowSkeleton = () => {
 export const VideoColumnSkeleton = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 mb-10">
-      {Array.from({ length: 9 }).map((_, index) => (
+      {Array.from({ length: 6 }).map((_, index) => (
         <div className="p-4 flex flex-col gap-3 w-full" key={index}>
           <Skeleton className="w-full aspect-video rounded-lg" />
           <div className="flex gap-3">

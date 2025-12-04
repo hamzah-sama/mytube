@@ -1,26 +1,20 @@
 import { VideoThumbnail } from "@/components/video-thumbnail";
 import { fallbackThumbnail } from "@/constant";
 import { videoCardType } from "@/type";
-import { useUser } from "@clerk/nextjs";
 import { formatDistanceToNow } from "date-fns";
 import Image from "next/image";
 import Link from "next/link";
 
-import { VideoDropdownMenu } from "@/modules/videos/components/video-dropdown-menu";
-import { useState } from "react";
-import { ConfirmationModal } from "./confirmation-modal";
-
 interface Props {
   data: videoCardType;
+  dropdown: React.ReactNode;
 }
-export const VideoCardColumn = ({ data }: Props) => {
-  const { user } = useUser();
-
+export const VideoCardColumn = ({ data, dropdown }: Props) => {
   return (
-    <>
+    <div className=" relative group hover:bg-accent p-4 rounded-xl ">
       <Link
         href={`/video/${data.muxPlaybackId}`}
-        className="hover:bg-accent p-4 rounded-xl flex flex-col gap-3 w-full group"
+        className=" flex flex-col gap-3"
       >
         <div className="relative w-full aspect-video">
           <VideoThumbnail
@@ -50,13 +44,9 @@ export const VideoCardColumn = ({ data }: Props) => {
               </p>
             </div>
           </div>
-          <VideoDropdownMenu
-            userLoginId={user?.id}
-            videoOwnerId={data.user.clerkId}
-            videoId={data.id}
-          />
         </div>
       </Link>
-    </>
+      <div className="absolute bottom-20 right-2">{dropdown}</div>
+    </div>
   );
 };
