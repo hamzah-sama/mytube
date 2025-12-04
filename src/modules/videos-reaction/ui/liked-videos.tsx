@@ -3,8 +3,11 @@
 import { VideoCardRow } from "@/components/video-card-row";
 import { useTRPC } from "@/trpc/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { LikeVideoDropdown } from "./like-video-dropdown";
+import { useUser } from "@clerk/nextjs";
 
 export const LikedVideos = () => {
+  const { user } = useUser();
   const trpc = useTRPC();
   const { data } = useSuspenseQuery(trpc.video.getLikedVideos.queryOptions());
 
@@ -22,7 +25,11 @@ export const LikedVideos = () => {
       ) : (
         <div className="flex flex-col w-[90%] gap-3 mb-10">
           {data?.map((video) => (
-            <VideoCardRow key={video.id} data={video} isLikePage />
+            <VideoCardRow
+              key={video.id}
+              data={video}
+              dropdown={<LikeVideoDropdown videoId={video.id} userLoginId={user?.id} videoOwnerId={video.user.clerkId} />}
+            />
           ))}
         </div>
       )}

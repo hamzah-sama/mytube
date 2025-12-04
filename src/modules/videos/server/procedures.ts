@@ -35,7 +35,6 @@ export const videoRouter = createTRPCRouter({
     .input(z.object({ categoryId: z.string().nullish() }))
     .query(async ({ input }) => {
       const { categoryId } = input;
-      console.log("server : ", categoryId);
       const data = await db
         .select({
           ...getTableColumns(videos),

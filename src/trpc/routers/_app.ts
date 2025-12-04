@@ -9,6 +9,7 @@ import { commentsRouter } from "@/modules/comments/server/procedures";
 import { commentsReactionRouter } from "@/modules/comments-reaction/server/procedures";
 import { subscriptionsRouter } from "@/modules/subscriptions/procedures";
 import { historyRouter } from "@/modules/view-and-history/history/server/procedures";
+import { playlistRouter } from "@/modules/playlist/server/procedures";
 export const appRouter = createTRPCRouter({
   categories: categoriesRouter,
   auth: authRouter,
@@ -20,6 +21,7 @@ export const appRouter = createTRPCRouter({
   comments: commentsRouter,
   commentsReaction: commentsReactionRouter,
   history: historyRouter,
+  playlist: playlistRouter,
 });
 // export type definition of API
 export type AppRouter = typeof appRouter;

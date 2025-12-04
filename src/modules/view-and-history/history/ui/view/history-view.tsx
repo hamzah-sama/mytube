@@ -2,10 +2,13 @@
 
 import { VideoCardRow } from "@/components/video-card-row";
 import { useTRPC } from "@/trpc/client";
+import { useUser } from "@clerk/nextjs";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
+import { HistoryVideoDropdown } from "../history-video-dropdown";
 
 export const HistoryView = () => {
+  const { user } = useUser();
   const trpc = useTRPC();
   const { data } = useSuspenseQuery(trpc.video.getHistory.queryOptions());
   return (
@@ -23,8 +26,23 @@ export const HistoryView = () => {
         <div className="flex flex-col w-[90%] gap-3 mb-10">
           {data?.map((video) => (
             <div key={video.id} className="flex items-center gap-4">
-              <p>{formatDistanceToNow(video.historyCreatedDate, { addSuffix: true })}</p>
-              <VideoCardRow data={video} isHistoryPage />
+              <p className="w-[100px]">
+                {formatDistanceToNow(video.historyCreatedDate, {
+                  addSuffix: true,
+                })}
+              </p>
+              <div className="flex-1">
+                <VideoCardRow
+                  data={video}
+                  dropdown={
+                    <HistoryVideoDropdown
+                      userLoginId={user?.id}
+                      videoOwnerId={video.user.clerkId}
+                      videoId={video.id}
+                    />
+                  }
+                />
+              </div>
             </div>
           ))}
         </div>

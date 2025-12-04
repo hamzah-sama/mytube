@@ -14,7 +14,7 @@ import { Button } from "./ui/button";
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onConfirm: () => void;
+  onConfirm: (e: any) => void;
   description: string;
   isLoading?: boolean;
   confirmText?: string;

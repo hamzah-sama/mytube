@@ -1,4 +1,3 @@
-import { table } from "console";
 import { relations } from "drizzle-orm";
 import {
   pgTable,
@@ -10,6 +9,7 @@ import {
   primaryKey,
   uniqueIndex,
   foreignKey,
+  index,
 } from "drizzle-orm/pg-core";
 
 import { createUpdateSchema, createInsertSchema } from "drizzle-zod";
@@ -32,43 +32,49 @@ export const categories = pgTable("categories", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const visibilityVideos = pgEnum("visibility_videos", [
-  "public",
-  "private",
-]);
+export const visibility = pgEnum("visibility", ["public", "private"]);
 export const workflowStatus = pgEnum("workflow_status", [
   "processing",
   "success",
 ]);
 
-export const videos = pgTable("videos", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  title: text("title").notNull(),
-  description: text("description"),
-  categoryId: uuid("category_id").references(() => categories.id, {
-    onDelete: "set null",
-  }),
-  thumbnailKey: text("thumbnail_key").unique(),
-  thumbnailUrl: text("thumbnail_url"),
-  previewUrl: text("preview_url"),
-  previewKey: text("preview_key"),
-  duration: integer("duration").notNull().default(0),
-  visibility: visibilityVideos("visibility").notNull().default("public"),
-  muxUploadedId: text("mux_uploaded_id").unique(),
-  muxAssetId: text("mux_asset_id").unique(),
-  muxStatus: text("mux_status"),
-  muxPlaybackId: text("mux_playback_id").unique(),
-  muxtrackId: text("mux_track_id").unique(),
-  muxTrackStatus: text("mux_track_status"),
-  workflowThumbnailStatus: workflowStatus("workflow_thumbnail_status"),
-  workflowTitleStatus: workflowStatus("workflow_title_status"),
-  workflowDescriptionStatus: workflowStatus("workflow_description_status"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-  userId: uuid("user_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-});
+export const videos = pgTable(
+  "videos",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    title: text("title").notNull(),
+    description: text("description"),
+    categoryId: uuid("category_id").references(() => categories.id, {
+      onDelete: "set null",
+    }),
+    thumbnailKey: text("thumbnail_key").unique(),
+    thumbnailUrl: text("thumbnail_url"),
+    previewUrl: text("preview_url"),
+    previewKey: text("preview_key"),
+    duration: integer("duration").notNull().default(0),
+    visibility: visibility("visibility").notNull().default("public"),
+    muxUploadedId: text("mux_uploaded_id").unique(),
+    muxAssetId: text("mux_asset_id").unique(),
+    muxStatus: text("mux_status"),
+    muxPlaybackId: text("mux_playback_id").unique(),
+    muxtrackId: text("mux_track_id").unique(),
+    muxTrackStatus: text("mux_track_status"),
+    workflowThumbnailStatus: workflowStatus("workflow_thumbnail_status"),
+    workflowTitleStatus: workflowStatus("workflow_title_status"),
+    workflowDescriptionStatus: workflowStatus("workflow_description_status"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+  },
+  (table) => [
+    index("idx_category_id").on(table.categoryId),
+    index("idx_user_id").on(table.userId),
+    index("idx_visibility").on(table.visibility),
+    index("idx_created_at").on(table.createdAt),
+  ]
+);
 
 export const videoUpdateSchema = createUpdateSchema(videos);
 
@@ -84,9 +90,10 @@ export const viewCount = pgTable(
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },
-  (table) => ({
-    pk: primaryKey({ columns: [table.userId, table.videoId] }),
-  })
+  (table) => [
+    primaryKey({ columns: [table.userId, table.videoId] }),
+    index("idx_video_id_view_count").on(table.videoId),
+  ]
 );
 
 export const history = pgTable(
@@ -101,9 +108,10 @@ export const history = pgTable(
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },
-  (table) => ({
-    pk: primaryKey({ columns: [table.userId, table.videoId] }),
-  })
+  (table) => [
+    primaryKey({ columns: [table.userId, table.videoId] }),
+    index("idx_user_id_history").on(table.userId),
+  ]
 );
 
 export const subscriptions = pgTable(
@@ -118,9 +126,11 @@ export const subscriptions = pgTable(
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },
-  (table) => ({
-    pk: primaryKey({ columns: [table.creatorId, table.viewerId] }),
-  })
+  (table) => [
+    primaryKey({ columns: [table.creatorId, table.viewerId] }),
+    index("idx_creator_id").on(table.creatorId),
+    index("idx_viewer_id").on(table.viewerId),
+  ]
 );
 
 export const like = pgTable(
@@ -135,7 +145,10 @@ export const like = pgTable(
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },
-  (table) => [uniqueIndex("unique_like").on(table.userId, table.videoId)]
+  (table) => [
+    primaryKey({ columns: [table.userId, table.videoId] }),
+    index("idx_video_id_like").on(table.videoId),
+  ]
 );
 
 export const dislike = pgTable(
@@ -150,7 +163,10 @@ export const dislike = pgTable(
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },
-  (table) => [uniqueIndex("unique_dislike").on(table.userId, table.videoId)]
+  (table) => [
+    primaryKey({ columns: [table.userId, table.videoId] }),
+    index("idx_video_id_dislike").on(table.videoId),
+  ]
 );
 
 export const comments = pgTable(
@@ -175,6 +191,9 @@ export const comments = pgTable(
         foreignColumns: [t.id],
         name: "comments_parent_id_fkey",
       }).onDelete("cascade"),
+      index("idx_video_id_comments").on(t.videoId),
+      index("idx_parent_id").on(t.parentId),
+      index("idx_created_at_comments").on(t.createdAt),
     ];
   }
 );
@@ -205,7 +224,8 @@ export const commentsLikeCount = pgTable(
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },
   (table) => [
-    uniqueIndex("unique_like_comments").on(table.userId, table.commentId),
+    primaryKey({ columns: [table.userId, table.commentId] }),
+    index("idx_comment_id_like").on(table.commentId),
   ]
 );
 
@@ -222,6 +242,40 @@ export const commentsDislikeCount = pgTable(
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },
   (table) => [
-    uniqueIndex("unique_dislike_comments").on(table.userId, table.commentId),
+    primaryKey({ columns: [table.userId, table.commentId] }),
+    index("idx_comment_id_dislike").on(table.commentId),
+  ]
+);
+
+export const playlist = pgTable("playlists", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  visibility: visibility("visibility").notNull().default("private"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const playlistUpdateSchema = createUpdateSchema(playlist);
+
+
+export const playlistVideos = pgTable(
+  "playlist_videos",
+  {
+    playlistId: uuid("playlist_id")
+      .notNull()
+      .references(() => playlist.id, { onDelete: "cascade" }),
+    videoId: uuid("video_id")
+      .notNull()
+      .references(() => videos.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.playlistId, table.videoId] }),
+    index("idx_video_id_playlists").on(table.videoId),
+    index("idx_playlist_id").on(table.playlistId),
   ]
 );

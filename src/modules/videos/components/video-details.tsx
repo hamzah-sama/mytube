@@ -12,6 +12,9 @@ import { VideoReaction } from "./video-details/reaction";
 import { CopyButton } from "./video-details/copy-button";
 import { VideoDropdownMenu } from "./video-dropdown-menu";
 import { useUser } from "@clerk/nextjs";
+import { useState } from "react";
+import { PlaylistModal } from "@/modules/playlist/ui/components/playlist-modal";
+import { GeneralVideoDropdown } from "@/modules/home/ui/components/general-video-dropdown";
 
 interface Props {
   video: videoDetailsType;
@@ -19,8 +22,10 @@ interface Props {
 
 export const VideoDetails = ({ video }: Props) => {
   const { user } = useUser();
+  const [openPlaylistModal, setOpenPlaylistModal] = useState(false);
   return (
     <>
+      <PlaylistModal open={openPlaylistModal} setOPen={setOpenPlaylistModal} videoId={video.id}/>
       <div className="p-2 flex flex-col gap-2">
         <p className="font-bold text-2xl">{video.title}</p>
         <Carousel>
@@ -39,11 +44,7 @@ export const VideoDetails = ({ video }: Props) => {
                     dislikedCount={video.dislikeCount}
                   />
                   <CopyButton video={video} />
-                  <VideoDropdownMenu
-                    videoOwnerId={video.user.clerkId}
-                    userLoginId={user?.id}
-                    variant="row"
-                  />
+                 <GeneralVideoDropdown userLoginId={user?.id} videoOwnerId={video.user.clerkId} videoId={video.id}/>
                 </div>
               </div>
             </CarouselItem>
