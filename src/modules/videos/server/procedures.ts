@@ -45,7 +45,7 @@ export const videoRouter = createTRPCRouter({
         .where(
           and(
             eq(videos.visibility, "public"),
-            categoryId ? eq(videos.categoryId, categoryId) : undefined
+            categoryId ? eq(videos.categoryId, categoryId) : sql`false`
           )
         )
         .innerJoin(users, eq(videos.userId, users.id))
@@ -118,7 +118,7 @@ export const videoRouter = createTRPCRouter({
             eq(videos.muxPlaybackId, videoPlaybackId),
             or(
               eq(videos.visibility, "public"),
-              userId ? eq(videos.userId, userId) : undefined
+              userId ? eq(videos.userId, userId) : sql`false`
             )
           )
         )
@@ -156,7 +156,7 @@ export const videoRouter = createTRPCRouter({
           and(
             existingVideo.categoryId
               ? eq(videos.categoryId, existingVideo.categoryId)
-              : undefined,
+              : sql`false`,
             not(eq(videos.id, existingVideo.id)),
             eq(videos.visibility, "public")
           )

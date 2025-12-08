@@ -3,7 +3,6 @@ import { subscriptions, users, videos, viewCount } from "@/db/schema";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
 import { and, desc, eq, getTableColumns, inArray, sql } from "drizzle-orm";
-import { get } from "node:http";
 import z from "zod";
 
 export const subscriptionsRouter = createTRPCRouter({
@@ -184,7 +183,7 @@ export const subscriptionsRouter = createTRPCRouter({
     // if the user is not subscribed to any creators, return an empty array
     if (subscriptionCreatorIds.length === 0) return [];
 
-    // fetch all videos with additional user and count info from the subscribed creators
+    // fetch creators the user is subscribed to (limited at 5)
     const data = await db
       .select()
       .from(users)

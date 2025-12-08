@@ -119,7 +119,7 @@ export const userRouter = createTRPCRouter({
           and(
             or(
               eq(videos.visibility, "public"),
-              ownerId ? eq(videos.userId, ownerId) : undefined
+              ownerId === userId ? sql`true` : sql`false`
             ),
             eq(videos.userId, userId)
           )
@@ -178,7 +178,7 @@ export const userRouter = createTRPCRouter({
           and(
             or(
               eq(playlist.visibility, "public"),
-              ownerId ? eq(playlist.userId, ownerId) : undefined
+              ownerId === userId ? sql`true` : sql`false`
             ),
             eq(playlist.userId, userId)
           )

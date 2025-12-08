@@ -38,7 +38,6 @@ export const UserView = ({ userId }: Props) => {
         <div className="cursor-pointer">
           <UploadDropzone
             endpoint="bannerUploader"
-            input={{ userId }}
             onClientUploadComplete={onUpdateComplete}
           />
         </div>

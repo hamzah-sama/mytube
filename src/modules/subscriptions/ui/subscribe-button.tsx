@@ -5,7 +5,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTRPC } from "@/trpc/client";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
-import { videoDetailsType } from "@/type";
 
 interface SubscribeButtonProps {
   userId?: string;
@@ -44,9 +43,10 @@ export const SubscribeButton = ({
           );
         }
         if (videoId) {
+          if (!videoPlaybackId) return;
           queryClient.invalidateQueries(
             trpc.video.getOne.queryOptions({
-              videoPlaybackId: videoPlaybackId!,
+              videoPlaybackId,
             })
           );
           queryClient.invalidateQueries(
@@ -70,8 +70,11 @@ export const SubscribeButton = ({
     if (!isSignedIn) return openSignIn();
     setSubscribed((p) => !p);
 
-    if (userId) createSubscriber.mutate({ userId });
-    if (videoId) createSubscriber.mutate({ videoId });
+    if (userId) {
+      createSubscriber.mutate({ userId });
+    } else if (videoId) {
+      createSubscriber.mutate({ videoId });
+    }
   };
 
   // === query: check isSubscribed ===
@@ -108,7 +111,7 @@ export const SubscribeButton = ({
       disabled={createSubscriber.isPending || isOwner}
     >
       <span className="text-base font-medium">
-        {subscribed ? "Unsubscribe" : "Subscribed"}
+        {subscribed ? "Unsubscribe" : "Subscribe"}
       </span>
     </Button>
   );

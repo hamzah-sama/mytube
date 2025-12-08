@@ -36,6 +36,13 @@ export const playlistRouter = createTRPCRouter({
         .innerJoin(users, eq(users.id, playlist.userId))
         .where(eq(playlist.id, playlistId));
 
+      if (!existingPlaylist) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Playlist not found",
+        });
+      }
+
       if (
         existingPlaylist.visibility === "private" &&
         existingPlaylist.ownerClerkId !== clerkUserId
@@ -165,7 +172,6 @@ export const playlistRouter = createTRPCRouter({
     .query(async ({ input }) => {
       const { playlistId } = input;
 
-      let ownerId: string | null = null;
       let ownerClerkId: string | null = null;
       const { userId: clerkUserId } = await auth();
 
@@ -175,7 +181,6 @@ export const playlistRouter = createTRPCRouter({
           .select({ id: users.id, clerkId: users.clerkId })
           .from(users)
           .where(eq(users.clerkId, clerkUserId));
-        ownerId = user?.id;
         ownerClerkId = user?.clerkId;
       }
 
@@ -206,9 +211,10 @@ export const playlistRouter = createTRPCRouter({
         .where(
           and(
             eq(playlistVideos.playlistId, playlistId),
-            ownerId
-              ? eq(videos.userId, ownerId)
-              : eq(videos.visibility, "public")
+            or(
+              eq(videos.visibility, "public"),
+              clerkUserId ? eq(users.clerkId, clerkUserId) : sql`false`
+            )
           )
         )
         .orderBy(desc(playlistVideos.createdAt));

@@ -13,10 +13,10 @@ interface Props {
 export const UserContent = ({ userId, clerkUserId }: Props) => {
   const trpc = useTRPC();
 
-  const { data: videos, isLoading: isLoadingVideos } = useSuspenseQuery(
+  const { data: videos } = useSuspenseQuery(
     trpc.user.getManyVideos.queryOptions({ userId })
   );
-  const { data: playlists, isLoading: isLoadingPlaylists } = useSuspenseQuery(
+  const { data: playlists } = useSuspenseQuery(
     trpc.user.getManyPlaylist.queryOptions({ userId })
   );
   return (
@@ -34,7 +34,6 @@ export const UserContent = ({ userId, clerkUserId }: Props) => {
 
       <div className="min-h-[300px]">
         <TabsContent value="video" className="transition-none">
-          {isLoadingVideos && <VideoColumnSkeleton />}
           {videos?.length === 0 ? (
             <p className="text-muted-foreground text-center pt-4">
               this user has no videos yet.
@@ -58,7 +57,6 @@ export const UserContent = ({ userId, clerkUserId }: Props) => {
           )}
         </TabsContent>
         <TabsContent value="playlist" className="transition-none">
-          {isLoadingPlaylists && <VideoColumnSkeleton />}
           {playlists.length === 0 ? (
             <p className="text-muted-foreground text-center pt-4">
               This user has no playlist to show
