@@ -7,38 +7,49 @@ import {
   videos,
   viewCount,
 } from "@/db/schema";
-import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
+import {
+  baseProcedure,
+  createTRPCRouter,
+  protectedProcedure,
+} from "@/trpc/init";
+import { auth } from "@clerk/nextjs/server";
 import { TRPCError } from "@trpc/server";
 import { and, desc, eq, getTableColumns, or, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import z from "zod";
 
 export const playlistRouter = createTRPCRouter({
-  getOne: protectedProcedure
+  getOne: baseProcedure
     .input(z.object({ playlistId: z.string() }))
-    .query(async ({ input, ctx }) => {
-      const { userId } = ctx.auth;
+    .query(async ({ input }) => {
       const { playlistId } = input;
+      const { userId: clerkUserId } = await auth();
 
-      if (!playlistId) {
+      const [existingPlaylist] = await db
+        .select({
+          id: playlist.id,
+          name: playlist.name,
+          visibility: playlist.visibility,
+          ownerClerkId: users.clerkId,
+        })
+        .from(playlist)
+        .innerJoin(users, eq(users.id, playlist.userId))
+        .where(eq(playlist.id, playlistId));
+
+      if (
+        existingPlaylist.visibility === "private" &&
+        existingPlaylist.ownerClerkId !== clerkUserId
+      ) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Something went wrong",
+          code: "NOT_FOUND",
+          message: "Playlist not found or access denied",
         });
       }
-      const [data] = await db
-        .select()
-        .from(playlist)
-        .where(
-          and(
-            eq(playlist.id, playlistId),
-            or(eq(playlist.visibility, "public"), eq(playlist.userId, userId))
-          )
-        );
-      return data;
+
+      return existingPlaylist;
     }),
   getMany: protectedProcedure.query(async ({ ctx }) => {
-    const { userId, clerkUserId } = ctx.auth;
+    const { userId } = ctx.auth;
 
     const pv = alias(playlistVideos, "pv");
     const v = alias(videos, "v");
@@ -68,12 +79,7 @@ export const playlistRouter = createTRPCRouter({
         thumbnailUrl: thumbnail.image,
       })
       .from(playlist)
-      .where(
-        and(
-          eq(playlist.userId, userId),
-          or(eq(users.clerkId, clerkUserId), eq(playlist.visibility, "public"))
-        )
-      )
+      .where(eq(playlist.userId, userId))
       .innerJoin(users, eq(playlist.userId, users.id))
       .leftJoin(
         thumbnail,
@@ -115,22 +121,23 @@ export const playlistRouter = createTRPCRouter({
       const { userId } = ctx.auth;
       const { playlistId } = input;
 
-      if (!playlistId) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Something went wrong",
-        });
-      }
       const [data] = await db
         .delete(playlist)
         .where(and(eq(playlist.id, playlistId), eq(playlist.userId, userId)))
         .returning();
 
+      if (!data) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Playlist not found or access denied",
+        });
+      }
+
       return data;
     }),
 
   update: protectedProcedure
-    .input(playlistUpdateSchema)
+    .input(playlistUpdateSchema.extend({ id: z.uuid() }))
     .mutation(async ({ ctx, input }) => {
       const { userId } = ctx.auth;
 
@@ -153,29 +160,34 @@ export const playlistRouter = createTRPCRouter({
       return data;
     }),
 
-  getManyVideos: protectedProcedure
+  getManyVideos: baseProcedure
     .input(z.object({ playlistId: z.string() }))
-    .query(async ({ input, ctx }) => {
+    .query(async ({ input }) => {
       const { playlistId } = input;
 
-      const { userId, clerkUserId } = ctx.auth;
+      let ownerId: string | null = null;
+      let ownerClerkId: string | null = null;
+      const { userId: clerkUserId } = await auth();
 
-      // Verify user can access this playlist
-      const [playlistRecord] = await db
-        .select()
+      // get authenticated user's id from db if clerk id exists and assign it to ownerId variable
+      if (clerkUserId) {
+        const [user] = await db
+          .select({ id: users.id, clerkId: users.clerkId })
+          .from(users)
+          .where(eq(users.clerkId, clerkUserId));
+        ownerId = user?.id;
+        ownerClerkId = user?.clerkId;
+      }
+
+      const [existingPlaylist] = await db
+        .select({ visibility: playlist.visibility })
         .from(playlist)
-        .innerJoin(users, eq(playlist.userId, users.id))
-        .where(
-          and(
-            eq(playlist.userId, userId),
-            or(
-              eq(users.clerkId, clerkUserId),
-              eq(playlist.visibility, "public")
-            )
-          )
-        );
+        .where(eq(playlist.id, playlistId));
 
-      if (!playlistRecord) {
+      if (
+        clerkUserId !== ownerClerkId &&
+        existingPlaylist.visibility === "private"
+      ) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Playlist not found or access denied",
@@ -191,7 +203,14 @@ export const playlistRouter = createTRPCRouter({
         .from(playlistVideos)
         .innerJoin(videos, eq(playlistVideos.videoId, videos.id))
         .innerJoin(users, eq(videos.userId, users.id))
-        .where(eq(playlistVideos.playlistId, playlistId))
+        .where(
+          and(
+            eq(playlistVideos.playlistId, playlistId),
+            ownerId
+              ? eq(videos.userId, ownerId)
+              : eq(videos.visibility, "public")
+          )
+        )
         .orderBy(desc(playlistVideos.createdAt));
 
       return data;

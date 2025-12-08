@@ -10,9 +10,11 @@ import { commentsReactionRouter } from "@/modules/comments-reaction/server/proce
 import { subscriptionsRouter } from "@/modules/subscriptions/procedures";
 import { historyRouter } from "@/modules/view-and-history/history/server/procedures";
 import { playlistRouter } from "@/modules/playlist/server/procedures";
+import { userRouter } from "@/modules/user/server/procedures";
 export const appRouter = createTRPCRouter({
   categories: categoriesRouter,
   auth: authRouter,
+  user: userRouter,
   studio: studioProcedures,
   video: videoRouter,
   viewCount: ViewCountRouter,

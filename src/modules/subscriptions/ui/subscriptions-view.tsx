@@ -10,11 +10,11 @@ export const SubscriptionsView = () => {
   const { user } = useUser();
   const trpc = useTRPC();
   const { data } = useSuspenseQuery(
-    trpc.video.getVideoSubscriptions.queryOptions()
+    trpc.subscription.getVideos.queryOptions()
   );
 
   return (
-    <div className="mx-auto max-w-[2400px] px-4 ">
+    <div className="flex flex-col mx-auto max-w-[2400px] px-4 gap-4 ">
       <h1 className="text-3xl font-bold">Subscriptions</h1>
       <p className="text-sm text-muted-foreground mb-5">
         Videos from your favorite creator

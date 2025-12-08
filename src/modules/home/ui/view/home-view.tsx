@@ -3,7 +3,6 @@ import { getQueryClient, trpc } from "@/trpc/server";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
-import { Loader2Icon } from "lucide-react";
 import { HomeVideosSection } from "@/modules/home/ui/components/home-video-section";
 
 export const HomeView = async () => {

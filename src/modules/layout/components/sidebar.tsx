@@ -1,14 +1,11 @@
 "use client";
 
 import {
+  ChevronRightIcon,
   FlameIcon,
   HistoryIcon,
   HomeIcon,
-  Inbox,
   ListVideoIcon,
-  PlaySquareIcon,
-  Search,
-  Settings,
   ThumbsUpIcon,
 } from "lucide-react";
 
@@ -26,6 +23,8 @@ import {
 import Link from "next/link";
 import { useAuth, useClerk } from "@clerk/nextjs";
 import { toast } from "sonner";
+import { SidebarUserSubscription } from "@/modules/user/ui/components/sidebar-user-subscription";
+import { usePathname } from "next/navigation";
 
 // Menu items.
 const mainItems = [
@@ -33,12 +32,6 @@ const mainItems = [
     title: "Home",
     url: "/",
     icon: HomeIcon,
-  },
-  {
-    title: "Subscriptions",
-    url: "/feed/subscriptions",
-    icon: PlaySquareIcon,
-    auth: true,
   },
   {
     title: "Trending",
@@ -70,6 +63,7 @@ const PersonalItems = [
 export const LayoutSidebar = () => {
   const { isSignedIn } = useAuth();
   const clerk = useClerk();
+  const pathName = usePathname()
   return (
     <Sidebar collapsible="icon" className="pt-16 z-40 border-none">
       <SidebarContent className="bg-background">
@@ -81,16 +75,7 @@ export const LayoutSidebar = () => {
                   <SidebarMenuButton
                     asChild
                     tooltip={item.title}
-                    isActive={false}
-                    onClick={(e) => {
-                      if (!isSignedIn && item.auth) {
-                        e.preventDefault();
-                        toast.info(
-                          "You need to be signed in to access this section."
-                        );
-                        return clerk.openSignIn();
-                      }
-                    }}
+                    isActive={pathName === item.url}
                   >
                     <Link href={item.url} className="flex items-center gap-4">
                       <item.icon />
@@ -102,6 +87,8 @@ export const LayoutSidebar = () => {
             </SidebarMenu>
           </SidebarGroupContent>
           <SidebarSeparator className="my-2" />
+          <SidebarUserSubscription />
+          <SidebarSeparator className="my-2" />
           <SidebarGroupLabel className="text-muted-foreground">
             You
           </SidebarGroupLabel>
@@ -112,7 +99,7 @@ export const LayoutSidebar = () => {
                   <SidebarMenuButton
                     asChild
                     tooltip={item.title}
-                    isActive={false}
+                    isActive={pathName == item.url}
                     onClick={(e) => {
                       if (!isSignedIn && item.auth) {
                         e.preventDefault();

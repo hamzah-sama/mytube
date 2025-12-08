@@ -195,41 +195,6 @@ export const videoRouter = createTRPCRouter({
     return data;
   }),
 
-  // get all videos that the authenticated user is subscribed to
-  getVideoSubscriptions: protectedProcedure.query(async ({ ctx }) => {
-    const { userId } = ctx.auth;
-    // get all subscriptions of the authenticated user
-    const getSubscriptions = await db
-      .select({ creatorId: subscriptions.creatorId })
-      .from(subscriptions)
-      .where(eq(subscriptions.viewerId, userId));
-
-    // get the creatorIds of the subscriptions
-    const subscriptionCreatorIds = getSubscriptions.map((sub) => sub.creatorId);
-
-    // if the user is not subscribed to any creators, return an empty array
-    if (subscriptionCreatorIds.length === 0) return [];
-
-    // fetch all videos with additional user and count info from the subscribed creators
-    const data = await db
-      .select({
-        ...getTableColumns(videos),
-        user: getTableColumns(users),
-        count: db.$count(viewCount, eq(viewCount.videoId, videos.id)),
-      })
-      .from(videos)
-      .where(
-        and(
-          inArray(videos.userId, subscriptionCreatorIds),
-          eq(videos.visibility, "public")
-        )
-      )
-      .innerJoin(users, eq(videos.userId, users.id))
-      .orderBy(desc(videos.createdAt), desc(videos.id));
-
-    return data;
-  }),
-
   getLikedVideos: protectedProcedure.query(async ({ ctx }) => {
     const { userId } = ctx.auth;
 

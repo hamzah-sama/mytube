@@ -23,4 +23,6 @@ export type playlistType = inferProcedureOutput<
   AppRouter["playlist"]["getOne"]
 >;
 
+// export type userType = inferProcedureOutput<AppRouter["user"]["getOne"]>;
+
 // export type replyType = inferProcedureOutput<AppRouter['commentsReplies']['getMany']>

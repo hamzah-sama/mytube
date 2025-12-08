@@ -13,7 +13,6 @@ interface Props {
 
 const Layout = ({ children }: Props) => {
   const queryClient = getQueryClient();
-  void queryClient.prefetchQuery(trpc.playlist.getMany.queryOptions());
   return (
     <SidebarProvider>
       <div className="w-full">

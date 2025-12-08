@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useTRPC } from "@/trpc/client";
 import {
   useMutation,
-  useQueryClient,
+  useQuery,
   useSuspenseQuery,
 } from "@tanstack/react-query";
 import { Loader2Icon, PlusIcon } from "lucide-react";
@@ -19,7 +19,7 @@ interface Props {
 export const PlaylistModal = ({ open, setOpen, videoId }: Props) => {
   const trpc = useTRPC();
   const [openModal, setOpenModal] = useState(false); // for create and add to playlist
-  const { data } = useSuspenseQuery(trpc.playlist.getMany.queryOptions());
+  const { data } = useQuery(trpc.playlist.getMany.queryOptions());
 
   const addVideoToPlaylist = useMutation(
     trpc.playlist.addVideo.mutationOptions({
@@ -43,7 +43,7 @@ export const PlaylistModal = ({ open, setOpen, videoId }: Props) => {
       </ResponsiveModal>
       <ResponsiveModal title="Add to..." onOpenChange={setOpen} open={open}>
         <div className="flex flex-col gap-3">
-          {data.map((playlist) => {
+          {data?.map((playlist) => {
             return (
               <Button
                 variant="outline"
