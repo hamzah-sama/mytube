@@ -1,4 +1,4 @@
-export const DEFAULT_LIMIT = 5;
+export const DEFAULT_LIMIT = 8;
 
 
 export const fallbackThumbnail = "/placeholder.svg";

@@ -1,5 +1,4 @@
 import {
-  VideoColumnSkeleton,
   VideoRowSkeleton,
 } from "@/modules/videos/components/skeleton/video-skeleton";
 import { HistoryView } from "@/modules/view-and-history/history/ui/view/history-view";

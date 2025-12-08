@@ -1,3 +1,4 @@
+import { fallbackThumbnail } from "@/constant";
 import { ListIcon, PlayIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -17,7 +18,7 @@ export const PlaylistCard = ({ name, id, videosCount, thumbnail }: Props) => {
         <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-[98.5%] overflow-hidden rounded-xl aspect-video bg-black/25 dark:bg-white/15"/>
         <div className="relative aspect-video w-full rounded-xl overflow-hidden">
           <Image
-            src={thumbnail || "/placeholder.svg"}
+            src={thumbnail || fallbackThumbnail}
             alt={name}
             fill
             className="object-cover"

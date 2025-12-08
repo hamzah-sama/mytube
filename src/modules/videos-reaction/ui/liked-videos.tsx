@@ -5,11 +5,19 @@ import { useTRPC } from "@/trpc/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { LikeVideoDropdown } from "./like-video-dropdown";
 import { useUser } from "@clerk/nextjs";
+import { useInfiniteScroll } from "@/lib/use-infinte-scroll";
+import { Loader2Icon } from "lucide-react";
 
 export const LikedVideos = () => {
   const { user } = useUser();
   const trpc = useTRPC();
   const { data } = useSuspenseQuery(trpc.video.getLikedVideos.queryOptions());
+
+  const { isLoadingMore, visibleCount, loaderRef } = useInfiniteScroll({
+    total: data.length,
+  });
+
+  const visibleVideos = data.slice(0, visibleCount);
 
   return (
     <div className="mx-auto max-w-[2400px] px-4">
@@ -24,13 +32,24 @@ export const LikedVideos = () => {
         </p>
       ) : (
         <div className="flex flex-col w-[90%] gap-3 mb-10">
-          {data?.map((video) => (
+          {visibleVideos?.map((video) => (
             <VideoCardRow
               key={video.id}
               data={video}
-              dropdown={<LikeVideoDropdown videoId={video.id} userLoginId={user?.id} videoOwnerId={video.user.clerkId} />}
+              dropdown={
+                <LikeVideoDropdown
+                  videoId={video.id}
+                  userLoginId={user?.id}
+                  videoOwnerId={video.user.clerkId}
+                />
+              }
             />
           ))}
+        </div>
+      )}
+      {isLoadingMore && (
+        <div ref={loaderRef} className="flex justify-center py-6">
+          <Loader2Icon className="size-5 animate-spin text-muted-foreground" />
         </div>
       )}
     </div>

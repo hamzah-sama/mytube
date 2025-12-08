@@ -1,17 +1,23 @@
 "use client";
 
 import { VideoCardColumn } from "@/components/video-card-column";
+import { useInfiniteScroll } from "@/lib/use-infinte-scroll";
 import { GeneralVideoDropdown } from "@/modules/home/ui/components/general-video-dropdown";
 import { useTRPC } from "@/trpc/client";
 import { useUser } from "@clerk/nextjs";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { Loader2Icon } from "lucide-react";
 
 export const SubscriptionsView = () => {
   const { user } = useUser();
   const trpc = useTRPC();
-  const { data } = useSuspenseQuery(
-    trpc.video.getVideoSubscriptions.queryOptions()
-  );
+  const { data } = useSuspenseQuery(trpc.subscription.getVideos.queryOptions());
+
+  const { isLoadingMore, visibleCount, loaderRef } = useInfiniteScroll({
+    total: data.length,
+  });
+
+  const visibleVideos = data.slice(0, visibleCount);
 
   return (
     <div className="mx-auto max-w-[2400px] px-4 ">
@@ -26,7 +32,7 @@ export const SubscriptionsView = () => {
         </p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 mb-10">
-          {data?.map((video) => (
+          {visibleVideos?.map((video) => (
             <VideoCardColumn
               key={video.id}
               data={video}
@@ -39,6 +45,11 @@ export const SubscriptionsView = () => {
               }
             />
           ))}
+        </div>
+      )}
+      {isLoadingMore && (
+        <div ref={loaderRef} className="flex justify-center py-6">
+          <Loader2Icon className="size-5 animate-spin text-muted-foreground" />
         </div>
       )}
     </div>
