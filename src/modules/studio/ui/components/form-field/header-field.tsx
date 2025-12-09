@@ -10,9 +10,10 @@ import { MoreVerticalIcon, Trash2Icon } from "lucide-react";
 interface Props {
   setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
   isPending: boolean;
+  isVideoReady: boolean;
 }
 
-export const HeaderField = ({ setOpenModal, isPending }: Props) => {
+export const HeaderField = ({ setOpenModal, isPending, isVideoReady }: Props) => {
   return (
     <div className="flex items-center justify-between">
       <div>
@@ -24,7 +25,7 @@ export const HeaderField = ({ setOpenModal, isPending }: Props) => {
       <div className="flex items-center gap-3">
         <Button
           type="submit"
-          disabled={isPending}
+          disabled={isPending || !isVideoReady}
           className="disabled:cursor-not-allowed"
         >
           {isPending ? "Saving..." : "Save changes"}

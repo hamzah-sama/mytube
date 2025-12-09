@@ -164,7 +164,8 @@ export const subscriptionsRouter = createTRPCRouter({
       .where(
         and(
           inArray(videos.userId, subscriptionCreatorIds),
-          eq(videos.visibility, "public")
+          eq(videos.visibility, "public"),
+          eq(videos.muxStatus, "ready")
         )
       )
       .innerJoin(users, eq(videos.userId, users.id))

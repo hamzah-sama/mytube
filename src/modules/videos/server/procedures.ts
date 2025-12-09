@@ -45,6 +45,7 @@ export const videoRouter = createTRPCRouter({
         .where(
           and(
             eq(videos.visibility, "public"),
+            eq(videos.muxStatus, "ready"),
             categoryId ? eq(videos.categoryId, categoryId) : sql`true`
           )
         )
@@ -66,10 +67,14 @@ export const videoRouter = createTRPCRouter({
         })
         .from(videos)
         .where(
-          or(
-            ilike(videos.title, `%${query}%`),
-            ilike(videos.description, `%${query}%`),
-            ilike(users.name, `%${query}%`)
+          and(
+            eq(videos.visibility, "public"),
+            eq(videos.muxStatus, "ready"),
+            or(
+              ilike(videos.title, `%${query}%`),
+              ilike(videos.description, `%${query}%`),
+              ilike(users.name, `%${query}%`)
+            )
           )
         )
         .innerJoin(users, eq(videos.userId, users.id));
@@ -158,7 +163,8 @@ export const videoRouter = createTRPCRouter({
               ? eq(videos.categoryId, existingVideo.categoryId)
               : sql`true`,
             not(eq(videos.id, existingVideo.id)),
-            eq(videos.visibility, "public")
+            eq(videos.visibility, "public"),
+            eq(videos.muxStatus, "ready")
           )
         )
         .innerJoin(users, eq(videos.userId, users.id));
@@ -174,7 +180,9 @@ export const videoRouter = createTRPCRouter({
         count: db.$count(viewCount, eq(viewCount.videoId, videos.id)),
       })
       .from(videos)
-      .where(eq(videos.visibility, "public"))
+      .where(
+        and(eq(videos.muxStatus, "ready"), eq(videos.visibility, "public"))
+      )
       .innerJoin(users, eq(videos.userId, users.id))
       .orderBy(
         desc(sql`(

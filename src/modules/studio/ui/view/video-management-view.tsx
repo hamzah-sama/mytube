@@ -117,6 +117,7 @@ export const VideoManagementView = ({ videoId }: Props) => {
             <HeaderField
               setOpenModal={setOpenModal}
               isPending={updateVideo.isPending}
+              isVideoReady={video.muxStatus === "ready"}
             />
 
             <div className="grid grid-cols-1 lg:grid-cols-5 mt-5 space-x-5">
