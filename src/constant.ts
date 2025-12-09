@@ -5,4 +5,4 @@ export const fallbackThumbnail = "/placeholder.svg";
 
 export const fallbackUserPlaceholder = '/user-placeholder.svg'
 
-export const PUBLIC_URL = 'https://unexcusable-nonstructured-cason.ngrok-free.dev'
+export const PUBLIC_URL = 'https://mytube-j2gq.vercel.app'
