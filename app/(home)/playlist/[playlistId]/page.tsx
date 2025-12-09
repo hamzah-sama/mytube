@@ -22,17 +22,17 @@ const Page = async ({ params }: Props) => {
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <ErrorBoundary fallback={<VideoError />}>
-        <Suspense fallback={<PageSkeleton />}>
+        <Suspense fallback={<PlaylistSkeleton />}>
           <PlaylistVideosView playlistId={playlistId} />
         </Suspense>
       </ErrorBoundary>
     </HydrationBoundary>
-  );
+  ); 
 };
 
 export default Page;
 
-const PageSkeleton = () => {
+export const PlaylistSkeleton = () => {
   return (
     <div className="mx-auto max-w-[2400px] px-4">
       <div className="flex justify-between lg:pr-8">

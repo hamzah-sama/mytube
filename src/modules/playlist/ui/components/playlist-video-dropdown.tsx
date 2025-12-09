@@ -2,17 +2,19 @@ import { ConfirmationModal } from "@/components/confirmation-modal";
 import { Dropdown } from "@/components/dropdown";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { useTRPC } from "@/trpc/client";
+import { useAuth } from "@clerk/nextjs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ListIcon, SettingsIcon, XIcon } from "lucide-react";
+import { SettingsIcon, XIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
 interface Props {
-  userLoginId: string | undefined;
+  userLoginId?: string | null;
   videoOwnerId: string;
   videoId: string;
   playlistId: string;
+  playlistClerkId?: string | null;
 }
 
 export const PlaylistVideoDropdown = ({
@@ -20,11 +22,11 @@ export const PlaylistVideoDropdown = ({
   videoOwnerId,
   videoId,
   playlistId,
+  playlistClerkId,
 }: Props) => {
   const router = useRouter();
   const trpc = useTRPC();
   const queryClient = useQueryClient();
-
   const [openRemovePlaylistModal, setOpenRemovePlaylistModal] = useState(false);
 
   const handleRemovePlaylist = useMutation(
@@ -50,12 +52,12 @@ export const PlaylistVideoDropdown = ({
         confirmText="Remove"
         loadingConfirmText="Removing..."
       />
-      <Dropdown>
-        <DropdownMenuItem onClick={() => setOpenRemovePlaylistModal(true)}>
-          <XIcon className="size-4 mr-2" />
-          Remove from playlist
-        </DropdownMenuItem>
-        {userLoginId === videoOwnerId && (
+      {playlistClerkId === userLoginId && (
+        <Dropdown>
+          <DropdownMenuItem onClick={() => setOpenRemovePlaylistModal(true)}>
+            <XIcon className="size-4 mr-2" />
+            Remove from playlist
+          </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => {
               router.push(`/studio/video/${videoId}`);
@@ -64,8 +66,8 @@ export const PlaylistVideoDropdown = ({
             <SettingsIcon className="size-4 mr-2" />
             Manage video
           </DropdownMenuItem>
-        )}
-      </Dropdown>
+        </Dropdown>
+      )}
     </>
   );
 };

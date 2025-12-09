@@ -4,7 +4,7 @@ import { ResponsiveModal } from "@/components/responsiveModal";
 import { Button } from "@/components/ui/button";
 import { useTRPC } from "@/trpc/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { PlusIcon, User } from "lucide-react";
+import { PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { PlaylistCard } from "../components/playlist-card";
 import { CreatePlaylistForm } from "../components/create-playlist-form";

@@ -6,11 +6,11 @@ import {
 import { videoDetailsType } from "@/type";
 import { VideoDescription } from "./video-details/description";
 import { UserInfo } from "./video-details/user-info";
-import { SubscribeButton } from "./video-details/subscribe-button";
 import { VideoReaction } from "./video-details/reaction";
 import { CopyButton } from "./video-details/copy-button";
-import { useUser } from "@clerk/nextjs";
+import { useAuth, useUser } from "@clerk/nextjs";
 import { GeneralVideoDropdown } from "@/modules/home/ui/components/general-video-dropdown";
+import { SubscribeButton } from "@/modules/subscriptions/ui/subscribe-button";
 
 interface Props {
   video: videoDetailsType;
@@ -18,6 +18,7 @@ interface Props {
 
 export const VideoDetails = ({ video }: Props) => {
   const { user } = useUser();
+  const { userId } = useAuth();
   return (
     <div className="p-2 flex flex-col gap-2">
       <p className="font-bold text-2xl">{video.title}</p>
@@ -27,7 +28,14 @@ export const VideoDetails = ({ video }: Props) => {
             <div className="flex items-center justify-between w-full">
               <div className="flex items-center gap-4">
                 <UserInfo video={video} />
-                <SubscribeButton video={video} />
+                <SubscribeButton
+                  videoId={video.id}
+                  videoPlaybackId={video.muxPlaybackId}
+                  isOwner={userId === video.user.clerkId}
+                  ownerLink={`studios/${video.muxPlaybackId}`}
+                  ownerText='Manage video'
+                />
+                {/* <SubscribeButton video={video} /> */}
               </div>
               <div className="flex items-center gap-6">
                 <VideoReaction

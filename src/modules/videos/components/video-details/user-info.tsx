@@ -27,7 +27,7 @@ export const UserInfo = ({ video }: Props) => {
           </p>
         </Link>
         <span className="text-muted-foreground text-sm lg:text-base">
-          {video.user.subscribersCount}{" "}
+          {Intl.NumberFormat("en", { notation: "standard" }).format(video.user.subscribersCount)}{' '}
           {video.user.subscribersCount <= 1 ? "subscriber" : "subscribers"}
         </span>
       </div>

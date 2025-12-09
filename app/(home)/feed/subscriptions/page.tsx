@@ -8,7 +8,7 @@ import { ErrorBoundary } from "react-error-boundary";
 const Page = () => {
   const queryClient = getQueryClient();
   void queryClient.prefetchQuery(
-    trpc.video.getVideoSubscriptions.queryOptions()
+    trpc.subscription.getVideos.queryOptions()
   );
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

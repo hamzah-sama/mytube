@@ -7,7 +7,7 @@ import Link from "next/link";
 
 interface Props {
   data: videoCardType;
-  dropdown: React.ReactNode;
+  dropdown?: React.ReactNode;
 }
 export const VideoCardColumn = ({ data, dropdown }: Props) => {
   return (
@@ -46,7 +46,7 @@ export const VideoCardColumn = ({ data, dropdown }: Props) => {
           </div>
         </div>
       </Link>
-      <div className="absolute bottom-20 right-2">{dropdown}</div>
+      <div className="absolute bottom-16 right-2">{dropdown}</div>
     </div>
   );
 };

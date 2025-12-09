@@ -1,11 +1,7 @@
 import { ResponsiveModal } from "@/components/responsiveModal";
 import { Button } from "@/components/ui/button";
 import { useTRPC } from "@/trpc/client";
-import {
-  useMutation,
-  useQueryClient,
-  useSuspenseQuery,
-} from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Loader2Icon, PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -19,7 +15,9 @@ interface Props {
 export const PlaylistModal = ({ open, setOpen, videoId }: Props) => {
   const trpc = useTRPC();
   const [openModal, setOpenModal] = useState(false); // for create and add to playlist
-  const { data } = useSuspenseQuery(trpc.playlist.getMany.queryOptions());
+  const { data, isLoading, isError } = useQuery(
+    trpc.playlist.getMany.queryOptions()
+  );
 
   const addVideoToPlaylist = useMutation(
     trpc.playlist.addVideo.mutationOptions({
@@ -43,23 +41,35 @@ export const PlaylistModal = ({ open, setOpen, videoId }: Props) => {
       </ResponsiveModal>
       <ResponsiveModal title="Add to..." onOpenChange={setOpen} open={open}>
         <div className="flex flex-col gap-3">
-          {data.map((playlist) => {
-            return (
-              <Button
-                variant="outline"
-                key={playlist.id}
-                onClick={() =>
-                  addVideoToPlaylist.mutate({
-                    playlistId: playlist.id,
-                    videoId,
-                  })
-                }
-                disabled={addVideoToPlaylist.isPending}
-              >
-                {playlist.name}
-              </Button>
-            );
-          })}
+          {isLoading && (
+            <p className="flex items-center justify-center">
+              <Loader2Icon className="animate-spin size-4" />
+            </p>
+          )}
+          {isError && (
+            <p className="text-destructive text-sm text-center">
+              Failed to load playlists, please try again
+            </p>
+          )}
+          {!isLoading &&
+            !isError &&
+            data?.map((playlist) => {
+              return (
+                <Button
+                  variant="outline"
+                  key={playlist.id}
+                  onClick={() =>
+                    addVideoToPlaylist.mutate({
+                      playlistId: playlist.id,
+                      videoId,
+                    })
+                  }
+                  disabled={addVideoToPlaylist.isPending}
+                >
+                  {playlist.name}
+                </Button>
+              );
+            })}
           {addVideoToPlaylist.isPending && (
             <p className="flex items-center justify-center">
               <Loader2Icon className="animate-spin size-4" />

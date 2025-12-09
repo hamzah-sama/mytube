@@ -13,14 +13,14 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { UpdatePlaylistForm } from "./update-playlist-form";
 import { PlaylistVideoDropdown } from "./playlist-video-dropdown";
-import { useUser } from "@clerk/nextjs";
+import { useAuth } from "@clerk/nextjs";
 
 interface Props {
   playlistId: string;
 }
 
 export const PlaylistVideosView = ({ playlistId }: Props) => {
-  const {user} = useUser()
+  const { userId: clerkUserId } = useAuth();
   const [openDeletePlaylistModal, setOpendeletePlaylistModal] = useState(false);
   const [openUpdatePlaylistModal, setOpenUpdatePlaylistModal] = useState(false);
   const trpc = useTRPC();
@@ -44,6 +44,7 @@ export const PlaylistVideosView = ({ playlistId }: Props) => {
       },
     })
   );
+
   return (
     <>
       <ConfirmationModal
@@ -76,22 +77,24 @@ export const PlaylistVideosView = ({ playlistId }: Props) => {
             </p>
           </div>
           <div className="mt-10">
-            <Dropdown>
-              <DropdownMenuItem
-                className="cursor-pointer"
-                onClick={() => setOpenUpdatePlaylistModal(true)}
-              >
-                <Edit2Icon className="mr-2" />
-                Edit playlist
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="cursor-pointer"
-                onClick={() => setOpendeletePlaylistModal(true)}
-              >
-                <Trash2Icon className=" mr-2 text-red-400" />
-                Delete playlist
-              </DropdownMenuItem>
-            </Dropdown>
+            {clerkUserId === playlist.ownerClerkId && (
+              <Dropdown>
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  onClick={() => setOpenUpdatePlaylistModal(true)}
+                >
+                  <Edit2Icon className="mr-2" />
+                  Edit playlist
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  onClick={() => setOpendeletePlaylistModal(true)}
+                >
+                  <Trash2Icon className=" mr-2 text-red-400" />
+                  Delete playlist
+                </DropdownMenuItem>
+              </Dropdown>
+            )}
           </div>
         </div>
 
@@ -105,9 +108,15 @@ export const PlaylistVideosView = ({ playlistId }: Props) => {
               <VideoCardRow
                 key={video.id}
                 data={video}
-                dropdown={<PlaylistVideoDropdown videoId={video.id} userLoginId={user?.id} videoOwnerId={video.user.clerkId}
-                playlistId={playlistId}
-                />}
+                dropdown={
+                  <PlaylistVideoDropdown
+                    videoId={video.id}
+                    userLoginId={clerkUserId}
+                    videoOwnerId={video.user.clerkId}
+                    playlistId={playlistId}
+                    playlistClerkId={playlist.ownerClerkId}
+                  />
+                }
               />
             ))}
           </div>

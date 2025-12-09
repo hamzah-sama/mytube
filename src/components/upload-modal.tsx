@@ -29,7 +29,7 @@ export const UploadModal = ({ open, onOpenChange, children, title }: Props) => {
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange} modal={false}>
       <DialogContent>
         <DialogHeader className="flex justify-center items-center pt-4">
           <DialogTitle>{title}</DialogTitle>
