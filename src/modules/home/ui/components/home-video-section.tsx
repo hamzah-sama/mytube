@@ -8,6 +8,8 @@ import { useUser } from "@clerk/nextjs";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { GeneralVideoDropdown } from "./general-video-dropdown";
+import { Loader2Icon } from "lucide-react";
+import { useInfiniteScroll } from "@/utils/use-infinite-scroll";
 
 export const HomeVideosSection = () => {
   const [value, setValue] = useState<string | null>(null);
@@ -19,9 +21,15 @@ export const HomeVideosSection = () => {
 
   const data = categories.map(({ name, id }) => ({ name, id }));
 
-  const { data: videos, isLoading: isLoadingVideos } = useQuery(
+  const { data: videos = [], isLoading: isLoadingVideos } = useQuery(
     trpc.video.getMany.queryOptions({ categoryId: value ?? undefined })
   );
+
+  const { isLoadingMore, visibleCount, loaderRef } = useInfiniteScroll({
+    total: videos.length,
+  });
+
+  const visibleVideos = videos.slice(0, visibleCount);
 
   return (
     <div className="flex flex-col mx-auto max-w-[2400px] px-4 gap-4">
@@ -40,7 +48,7 @@ export const HomeVideosSection = () => {
         </p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 mb-10">
-          {videos?.map((video) => (
+          {visibleVideos?.map((video) => (
             <VideoCardColumn
               key={video.id}
               data={video}
@@ -53,6 +61,11 @@ export const HomeVideosSection = () => {
               }
             />
           ))}
+        </div>
+      )}
+      {isLoadingMore && (
+        <div ref={loaderRef} className="flex justify-center py-6">
+          <Loader2Icon className="size-5 animate-spin text-muted-foreground" />
         </div>
       )}
     </div>

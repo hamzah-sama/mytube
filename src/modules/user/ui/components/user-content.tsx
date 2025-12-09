@@ -4,11 +4,13 @@ import { GeneralVideoDropdown } from "@/modules/home/ui/components/general-video
 import { PlaylistCard } from "@/modules/playlist/ui/components/playlist-card";
 import { VideoColumnSkeleton } from "@/modules/videos/components/skeleton/video-skeleton";
 import { useTRPC } from "@/trpc/client";
+import { useInfiniteScroll } from "@/utils/use-infinite-scroll";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { Loader2Icon } from "lucide-react";
 
 interface Props {
   userId: string;
-  clerkUserId?: string | null
+  clerkUserId?: string | null;
 }
 export const UserContent = ({ userId, clerkUserId }: Props) => {
   const trpc = useTRPC();
@@ -19,6 +21,27 @@ export const UserContent = ({ userId, clerkUserId }: Props) => {
   const { data: playlists } = useSuspenseQuery(
     trpc.user.getManyPlaylist.queryOptions({ userId })
   );
+
+  const {
+    isLoadingMore: videoIsLoadingMore,
+    visibleCount: videoVisibleCount,
+    loaderRef: videoLoaderRef,
+  } = useInfiniteScroll({
+    total: videos.length,
+  });
+
+  const visibleVideos = videos.slice(0, videoVisibleCount);
+
+  const {
+    isLoadingMore: playlistIsLoadingMore,
+    visibleCount: playlistVisibleCount,
+    loaderRef: playlistLoaderRef,
+  } = useInfiniteScroll({
+    total: playlists.length,
+  });
+
+  const visiblePlaylists = playlists.slice(0, playlistVisibleCount);
+
   return (
     <Tabs defaultValue="video">
       <div className="border-b mb-4">
@@ -40,7 +63,7 @@ export const UserContent = ({ userId, clerkUserId }: Props) => {
             </p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 mb-10">
-              {videos?.map((video) => (
+              {visibleVideos?.map((video) => (
                 <VideoCardColumn
                   key={video.id}
                   data={video}
@@ -55,6 +78,11 @@ export const UserContent = ({ userId, clerkUserId }: Props) => {
               ))}
             </div>
           )}
+          {videoIsLoadingMore && (
+            <div ref={videoLoaderRef} className="flex justify-center py-6">
+              <Loader2Icon className="size-5 animate-spin text-muted-foreground" />
+            </div>
+          )}
         </TabsContent>
         <TabsContent value="playlist" className="transition-none">
           {playlists.length === 0 ? (
@@ -63,7 +91,7 @@ export const UserContent = ({ userId, clerkUserId }: Props) => {
             </p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-10">
-              {playlists.map((playlist) => (
+              {visiblePlaylists.map((playlist) => (
                 <div key={playlist.id}>
                   <PlaylistCard
                     name={playlist.name}
@@ -73,6 +101,11 @@ export const UserContent = ({ userId, clerkUserId }: Props) => {
                   />
                 </div>
               ))}
+            </div>
+          )}
+          {playlistIsLoadingMore && (
+            <div ref={playlistLoaderRef} className="flex justify-center py-6">
+              <Loader2Icon className="size-5 animate-spin text-muted-foreground" />
             </div>
           )}
         </TabsContent>
