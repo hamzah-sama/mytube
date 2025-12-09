@@ -198,7 +198,7 @@ export const videoRouter = createTRPCRouter({
   getLikedVideos: protectedProcedure.query(async ({ ctx }) => {
     const { userId } = ctx.auth;
 
-    if (!userId) return;
+    if (!userId) throw new TRPCError({ code: "UNAUTHORIZED" });
     // get all liked videos of the authenticated user
     const likedVideos = await db
       .select({ videoId: like.videoId })
@@ -232,7 +232,7 @@ export const videoRouter = createTRPCRouter({
 
   getHistory: protectedProcedure.query(async ({ ctx }) => {
     const { userId } = ctx.auth;
-    if (!userId) return;
+    if (!userId) throw new TRPCError({ code: "UNAUTHORIZED" });
 
     // get all history of the authenticated user
     const historyVideo = await db

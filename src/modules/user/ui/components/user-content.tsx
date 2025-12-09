@@ -1,17 +1,20 @@
-import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 import { VideoCardColumn } from "@/components/video-card-column";
 import { GeneralVideoDropdown } from "@/modules/home/ui/components/general-video-dropdown";
 import { PlaylistCard } from "@/modules/playlist/ui/components/playlist-card";
-import { VideoColumnSkeleton } from "@/modules/videos/components/skeleton/video-skeleton";
 import { useTRPC } from "@/trpc/client";
+import { useInfiniteScroll } from "@/utils/use-infinite-scroll";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { Loader2Icon } from "lucide-react";
+import { useState } from "react";
 
 interface Props {
   userId: string;
-  clerkUserId?: string | null
+  clerkUserId?: string | null;
 }
 export const UserContent = ({ userId, clerkUserId }: Props) => {
   const trpc = useTRPC();
+  const [activeTab, setActiveTab] = useState("video");
 
   const { data: videos } = useSuspenseQuery(
     trpc.user.getManyVideos.queryOptions({ userId })
@@ -19,28 +22,54 @@ export const UserContent = ({ userId, clerkUserId }: Props) => {
   const { data: playlists } = useSuspenseQuery(
     trpc.user.getManyPlaylist.queryOptions({ userId })
   );
-  return (
-    <Tabs defaultValue="video">
-      <div className="border-b mb-4">
-        <TabsList className="gap-7">
-          <TabsTrigger value="video" className="text-lg">
-            Video
-          </TabsTrigger>
-          <TabsTrigger value="playlist" className="text-lg">
-            Playlist
-          </TabsTrigger>
-        </TabsList>
-      </div>
 
-      <div className="min-h-[300px]">
-        <TabsContent value="video" className="transition-none">
-          {videos?.length === 0 ? (
+  const {
+    isLoadingMore: videoIsLoadingMore,
+    visibleCount: videoVisibleCount,
+    loaderRef: videoLoaderRef,
+  } = useInfiniteScroll({
+    total: videos.length,
+    enabled: activeTab === "video",
+  });
+
+  const visibleVideos = videos.slice(0, videoVisibleCount);
+
+  const {
+    isLoadingMore: playlistIsLoadingMore,
+    visibleCount: playlistVisibleCount,
+    loaderRef: playlistLoaderRef,
+  } = useInfiniteScroll({
+    total: playlists.length,
+    enabled: activeTab === "playlist",
+  });
+
+  const visiblePlaylists = playlists.slice(0, playlistVisibleCount);
+
+  return (
+    <div className="flex flex-col space-y-6 pt-4">
+      <div className="flex gap-4">
+        <Button
+          onClick={() => setActiveTab("video")}
+          variant={activeTab === "video" ? "default" : "outline"}
+        >
+          Video
+        </Button>
+        <Button
+          onClick={() => setActiveTab("playlist")}
+          variant={activeTab === "playlist" ? "default" : "outline"}
+        >
+          Playlist
+        </Button>
+      </div>
+      {activeTab === "video" && (
+        <div>
+          {visibleVideos.length === 0 ? (
             <p className="text-muted-foreground text-center pt-4">
               this user has no videos yet.
             </p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 mb-10">
-              {videos?.map((video) => (
+              {visibleVideos.map((video) => (
                 <VideoCardColumn
                   key={video.id}
                   data={video}
@@ -55,15 +84,22 @@ export const UserContent = ({ userId, clerkUserId }: Props) => {
               ))}
             </div>
           )}
-        </TabsContent>
-        <TabsContent value="playlist" className="transition-none">
-          {playlists.length === 0 ? (
+          {videoIsLoadingMore && (
+            <div ref={videoLoaderRef} className="flex justify-center py-6">
+              <Loader2Icon className="size-5 animate-spin text-muted-foreground" />
+            </div>
+          )}
+        </div>
+      )}
+      {activeTab === "playlist" && (
+        <div>
+          {visiblePlaylists.length === 0 ? (
             <p className="text-muted-foreground text-center pt-4">
               This user has no playlist to show
             </p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-10">
-              {playlists.map((playlist) => (
+              {visiblePlaylists.map((playlist) => (
                 <div key={playlist.id}>
                   <PlaylistCard
                     name={playlist.name}
@@ -75,8 +111,13 @@ export const UserContent = ({ userId, clerkUserId }: Props) => {
               ))}
             </div>
           )}
-        </TabsContent>
-      </div>
-    </Tabs>
+          {playlistIsLoadingMore && (
+            <div ref={playlistLoaderRef} className="flex justify-center py-6">
+              <Loader2Icon className="size-5 animate-spin text-muted-foreground" />
+            </div>
+          )}
+        </div>
+      )}
+    </div>
   );
 };

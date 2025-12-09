@@ -7,20 +7,21 @@ import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { VideoCardRow } from "@/components/video-card-row";
 import { useTRPC } from "@/trpc/client";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
-import { Edit2Icon, Trash2Icon } from "lucide-react";
+import { Edit2Icon, Loader2Icon, Trash2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import { UpdatePlaylistForm } from "./update-playlist-form";
-import { PlaylistVideoDropdown } from "./playlist-video-dropdown";
-import { useAuth } from "@clerk/nextjs";
+import { UpdatePlaylistForm } from "../components/update-playlist-form";
+import { PlaylistVideoDropdown } from "../components/playlist-video-dropdown";
+import { useUser } from "@clerk/nextjs";
+import { useInfiniteScroll } from "@/utils/use-infinite-scroll";
 
 interface Props {
   playlistId: string;
 }
 
 export const PlaylistVideosView = ({ playlistId }: Props) => {
-  const { userId: clerkUserId } = useAuth();
+  const { user } = useUser();
   const [openDeletePlaylistModal, setOpendeletePlaylistModal] = useState(false);
   const [openUpdatePlaylistModal, setOpenUpdatePlaylistModal] = useState(false);
   const trpc = useTRPC();
@@ -45,6 +46,11 @@ export const PlaylistVideosView = ({ playlistId }: Props) => {
     })
   );
 
+  const { isLoadingMore, visibleCount, loaderRef } = useInfiniteScroll({
+    total: data.length,
+  });
+
+  const visiblePlaylists = data.slice(0, visibleCount);
   return (
     <>
       <ConfirmationModal
@@ -77,7 +83,7 @@ export const PlaylistVideosView = ({ playlistId }: Props) => {
             </p>
           </div>
           <div className="mt-10">
-            {clerkUserId === playlist.ownerClerkId && (
+            {user?.id === playlist.ownerClerkId && (
               <Dropdown>
                 <DropdownMenuItem
                   className="cursor-pointer"
@@ -104,15 +110,14 @@ export const PlaylistVideosView = ({ playlistId }: Props) => {
           </p>
         ) : (
           <div className="flex flex-col w-[90%] gap-3 mb-10">
-            {data?.map((video) => (
+            {visiblePlaylists?.map((video) => (
               <VideoCardRow
                 key={video.id}
                 data={video}
                 dropdown={
                   <PlaylistVideoDropdown
                     videoId={video.id}
-                    userLoginId={clerkUserId}
-                    videoOwnerId={video.user.clerkId}
+                    userLoginId={user?.id}
                     playlistId={playlistId}
                     playlistClerkId={playlist.ownerClerkId}
                   />
@@ -122,6 +127,11 @@ export const PlaylistVideosView = ({ playlistId }: Props) => {
           </div>
         )}
       </div>
+      {isLoadingMore && (
+        <div ref={loaderRef} className="flex justify-center py-6">
+          <Loader2Icon className="size-5 animate-spin text-muted-foreground" />
+        </div>
+      )}
     </>
   );
 };

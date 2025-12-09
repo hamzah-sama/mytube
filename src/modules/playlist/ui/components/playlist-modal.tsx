@@ -6,6 +6,7 @@ import { Loader2Icon, PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { CreatePlaylistForm } from "./create-playlist-form";
+import { useInfiniteScroll } from "@/utils/use-infinite-scroll";
 
 interface Props {
   open: boolean;
@@ -15,9 +16,17 @@ interface Props {
 export const PlaylistModal = ({ open, setOpen, videoId }: Props) => {
   const trpc = useTRPC();
   const [openModal, setOpenModal] = useState(false); // for create and add to playlist
-  const { data, isLoading, isError } = useQuery(
-    trpc.playlist.getMany.queryOptions()
-  );
+  const {
+    data = [],
+    isLoading,
+    isError,
+  } = useQuery(trpc.playlist.getMany.queryOptions());
+
+  const { isLoadingMore, visibleCount, loaderRef } = useInfiniteScroll({
+    total: data.length,
+  });
+
+  const visiblePlaylists = data.slice(0, visibleCount);
 
   const addVideoToPlaylist = useMutation(
     trpc.playlist.addVideo.mutationOptions({
@@ -53,7 +62,7 @@ export const PlaylistModal = ({ open, setOpen, videoId }: Props) => {
           )}
           {!isLoading &&
             !isError &&
-            data?.map((playlist) => {
+            visiblePlaylists?.map((playlist) => {
               return (
                 <Button
                   variant="outline"
@@ -70,6 +79,11 @@ export const PlaylistModal = ({ open, setOpen, videoId }: Props) => {
                 </Button>
               );
             })}
+          {isLoadingMore && (
+            <div ref={loaderRef} className="flex items-center justify-center">
+              <Loader2Icon className="animate-spin size-4" />
+            </div>
+          )}
           {addVideoToPlaylist.isPending && (
             <p className="flex items-center justify-center">
               <Loader2Icon className="animate-spin size-4" />

@@ -1,5 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { PlaylistVideosView } from "@/modules/playlist/ui/components/playlist-videos-view";
+import { PlaylistVideosView } from "@/modules/playlist/ui/view/playlist-videos-view";
 import { VideoRowSkeleton } from "@/modules/videos/components/skeleton/video-skeleton";
 import { VideoError } from "@/modules/videos/components/video-error";
 import { getQueryClient, trpc } from "@/trpc/server";

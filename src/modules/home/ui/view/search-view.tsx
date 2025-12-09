@@ -5,15 +5,23 @@ import { useTRPC } from "@/trpc/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useUser } from "@clerk/nextjs";
 import { GeneralVideoDropdown } from "../components/general-video-dropdown";
+import { Loader2Icon } from "lucide-react";
+import { useInfiniteScroll } from "@/utils/use-infinite-scroll";
 
 interface Props {
   query: string;
 }
 export const SearchView = ({ query }: Props) => {
   const trpc = useTRPC();
-  const {user} = useUser()
+  const { user } = useUser();
 
   const { data } = useSuspenseQuery(trpc.video.search.queryOptions({ query }));
+  const { isLoadingMore, visibleCount, loaderRef } = useInfiniteScroll({
+    total: data.length,
+    limit: 5,
+  });
+
+  const visibleVideos = data.slice(0, visibleCount);
   return (
     <>
       <h1 className="text-lg font-bold text-left">
@@ -24,8 +32,24 @@ export const SearchView = ({ query }: Props) => {
           No videos found
         </p>
       ) : (
-        data.map((video) => <VideoCardRow key={video.id} data={video} 
-        dropdown={<GeneralVideoDropdown userLoginId={user?.id} videoOwnerId={video.user.clerkId} videoId={video.id} />} />)
+        visibleVideos.map((video) => (
+          <VideoCardRow
+            key={video.id}
+            data={video}
+            dropdown={
+              <GeneralVideoDropdown
+                userLoginId={user?.id}
+                videoOwnerId={video.user.clerkId}
+                videoId={video.id}
+              />
+            }
+          />
+        ))
+      )}
+      {isLoadingMore && (
+        <div ref={loaderRef} className="flex justify-center py-6">
+          <Loader2Icon className="size-5 animate-spin text-muted-foreground" />
+        </div>
       )}
     </>
   );
