@@ -148,13 +148,11 @@ export const VideoManagementView = ({ videoId }: Props) => {
               </div>
               <div className="col-span-2 flex flex-col gap-5 pb-5">
                 <div className="bg-[#f9f9f9] rounded-md relative overflow-hidden space-y-5 pb-5 dark:bg-gray-800">
-                  <div className="relative aspect-video w-full ">
                     <VideoField
                       playbackId={video.muxPlaybackId}
                       thumbnailUrl={video.thumbnailUrl}
                       videoStatus={video.muxStatus}
                     />
-                  </div>
                   <VideoLinkField playbackId={video.muxPlaybackId} />
                   <div className="flex flex-col p-2">
                     <p className="text-sm text-muted-foreground">

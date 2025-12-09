@@ -14,7 +14,6 @@ import {
 
 import { createUpdateSchema, createInsertSchema } from "drizzle-zod";
 import z from "zod";
-import { id } from "zod/v4/locales";
 
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
