@@ -46,8 +46,12 @@ export const subscriptionsRouter = createTRPCRouter({
       }
 
       // prevent users from subscribing to themselves
-      if (viewerId === creatorId) return;
-
+      if (viewerId === creatorId) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Cannot subscribe to yourself",
+        });
+      }
       // check if a subscription record already exists
       const [existingRecord] = await db
         .select()

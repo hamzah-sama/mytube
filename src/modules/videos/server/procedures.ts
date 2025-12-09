@@ -45,7 +45,7 @@ export const videoRouter = createTRPCRouter({
         .where(
           and(
             eq(videos.visibility, "public"),
-            categoryId ? eq(videos.categoryId, categoryId) : sql`false`
+            categoryId ? eq(videos.categoryId, categoryId) : sql`true`
           )
         )
         .innerJoin(users, eq(videos.userId, users.id))
