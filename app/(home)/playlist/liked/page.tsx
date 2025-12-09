@@ -1,4 +1,5 @@
-import { Skeleton } from "@/components/ui/skeleton";
+export const dynamic = "force-dynamic";
+
 import { LikedVideos } from "@/modules/videos-reaction/ui/liked-videos";
 import { VideoRowSkeleton } from "@/modules/videos/components/skeleton/video-skeleton";
 import { getQueryClient, trpc } from "@/trpc/server";

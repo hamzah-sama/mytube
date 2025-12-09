@@ -4,7 +4,7 @@ interface Props {
   playbackId: string | undefined;
   imageThumbnail: string;
   isAutoPlay: boolean;
-  handlePlay: () => void;
+  handlePlay?: () => void;
 }
 export const VideoPlayer = ({
   playbackId,

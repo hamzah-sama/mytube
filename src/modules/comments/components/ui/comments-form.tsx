@@ -90,7 +90,7 @@ export const CommentsForm = ({ videoPlaybackId }: Props) => {
         <div className="flex justify-end">
           <Button
             type="submit"
-            disabled={createComment.isPending}
+            disabled={createComment.isPending || !form.formState.isValid}
             className="w-[100px]"
           >
             {createComment.isPending ? (

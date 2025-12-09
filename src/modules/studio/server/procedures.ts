@@ -1,7 +1,7 @@
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, getTableColumns } from "drizzle-orm";
 
 import { db } from "@/db";
-import { videos, videoUpdateSchema } from "@/db/schema";
+import { comments, like, videos, videoUpdateSchema, viewCount } from "@/db/schema";
 import { mux } from "@/lib/mux";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
@@ -12,15 +12,18 @@ import { Client } from "@upstash/workflow";
 const utApi = new UTApi();
 
 export const studioProcedures = createTRPCRouter({
-  getMany: protectedProcedure.query(async ({ input, ctx }) => {
+  getMany: protectedProcedure.query(async ({ ctx }) => {
     const { userId } = ctx.auth;
-
     const data = await db
-      .select()
+      .select({
+        ...getTableColumns(videos),
+        viewCount: db.$count(viewCount, eq(viewCount.videoId, videos.id)),
+        totalComments: db.$count(comments, eq(comments.videoId, videos.id)),
+        totalLikes: db.$count(like, eq(like.videoId, videos.id)),
+      })
       .from(videos)
       .where(eq(videos.userId, userId))
-      .orderBy(desc(videos.updatedAt), desc(videos.id));
-
+      .orderBy(desc(videos.createdAt), desc(videos.id));
     return data;
   }),
 
@@ -63,7 +66,7 @@ export const studioProcedures = createTRPCRouter({
               {
                 generated_subtitles: [
                   {
-                    language_code: 'en',
+                    language_code: "en",
                     name: "English",
                   },
                 ],
@@ -268,11 +271,17 @@ export const studioProcedures = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
       const client = new Client({ token: process.env.QSTASH_TOKEN! });
+      const baseUrl = process.env.WORKFLOW_BASE_URL;
+      if (!baseUrl)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Workflow base url is not defined",
+        });
 
       const { userId } = ctx.auth;
 
       const { workflowRunId } = await client.trigger({
-        url: `http://${process.env.WORKFLOW_BASE_URL}/api/workflow/thumbnail`,
+        url: `${baseUrl}/api/workflow/thumbnail`,
         retries: 3,
         keepTriggerConfig: true,
         body: { userId, videoId: input.videoId, prompt: input.prompt },
@@ -314,8 +323,15 @@ export const studioProcedures = createTRPCRouter({
 
       const client = new Client({ token: process.env.QSTASH_TOKEN! });
 
+      const baseUrl = process.env.WORKFLOW_BASE_URL;
+      if (!baseUrl)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Workflow base url is not defined",
+        });
+
       const { workflowRunId } = await client.trigger({
-        url: `http://${process.env.WORKFLOW_BASE_URL}/api/workflow/title`,
+        url: `${baseUrl}/api/workflow/title`,
         retries: 3,
         keepTriggerConfig: true,
         body: { userId, videoId: input.videoId },

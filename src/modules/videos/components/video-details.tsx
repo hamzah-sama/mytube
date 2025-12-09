@@ -32,7 +32,7 @@ export const VideoDetails = ({ video }: Props) => {
                   videoId={video.id}
                   videoPlaybackId={video.muxPlaybackId}
                   isOwner={userId === video.user.clerkId}
-                  ownerLink={`studios/${video.muxPlaybackId}`}
+                  ownerLink={`/studio/video/${video.id}`}
                   ownerText='Manage video'
                 />
                 {/* <SubscribeButton video={video} /> */}

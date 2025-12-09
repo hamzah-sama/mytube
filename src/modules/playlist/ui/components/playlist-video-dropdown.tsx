@@ -11,6 +11,7 @@ import { toast } from "sonner";
 
 interface Props {
   userLoginId?: string | null;
+  videoOwnerId: string;
   videoId: string;
   playlistId: string;
   playlistClerkId?: string | null;
@@ -18,6 +19,7 @@ interface Props {
 
 export const PlaylistVideoDropdown = ({
   userLoginId,
+  videoOwnerId,
   videoId,
   playlistId,
   playlistClerkId,
@@ -50,12 +52,14 @@ export const PlaylistVideoDropdown = ({
         confirmText="Remove"
         loadingConfirmText="Removing..."
       />
-      {playlistClerkId === userLoginId && (
-        <Dropdown>
+      <Dropdown>
+        {playlistClerkId === userLoginId && (
           <DropdownMenuItem onClick={() => setOpenRemovePlaylistModal(true)}>
             <XIcon className="size-4 mr-2" />
             Remove from playlist
           </DropdownMenuItem>
+        )}
+        {userLoginId === videoOwnerId && (
           <DropdownMenuItem
             onClick={() => {
               router.push(`/studio/video/${videoId}`);
@@ -64,8 +68,8 @@ export const PlaylistVideoDropdown = ({
             <SettingsIcon className="size-4 mr-2" />
             Manage video
           </DropdownMenuItem>
-        </Dropdown>
-      )}
+        )}
+      </Dropdown>
     </>
   );
 };

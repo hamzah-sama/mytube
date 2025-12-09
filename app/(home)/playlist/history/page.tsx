@@ -1,7 +1,6 @@
-import {
-  VideoColumnSkeleton,
-  VideoRowSkeleton,
-} from "@/modules/videos/components/skeleton/video-skeleton";
+export const dynamic = "force-dynamic";
+
+import { VideoRowSkeleton } from "@/modules/videos/components/skeleton/video-skeleton";
 import { HistoryView } from "@/modules/view-and-history/history/ui/view/history-view";
 import { getQueryClient, trpc } from "@/trpc/server";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
@@ -37,7 +36,7 @@ const PageSkeleton = () => {
       <p className="text-sm text-muted-foreground mb-5">
         Videos you have watched
       </p>
-        <VideoRowSkeleton />
+      <VideoRowSkeleton />
     </div>
   );
 };

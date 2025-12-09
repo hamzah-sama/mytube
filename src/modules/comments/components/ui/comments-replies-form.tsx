@@ -109,7 +109,7 @@ export const CommentsRepliesForm = ({
           </Button>
           <Button
             type="submit"
-            disabled={createReplies.isPending}
+            disabled={createReplies.isPending || !form.formState.isValid}
             className="w-[100px]"
           >
             {createReplies.isPending ? (

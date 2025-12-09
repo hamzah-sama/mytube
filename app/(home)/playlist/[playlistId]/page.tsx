@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { Skeleton } from "@/components/ui/skeleton";
 import { PlaylistVideosView } from "@/modules/playlist/ui/view/playlist-videos-view";
 import { VideoRowSkeleton } from "@/modules/videos/components/skeleton/video-skeleton";
@@ -27,7 +29,7 @@ const Page = async ({ params }: Props) => {
         </Suspense>
       </ErrorBoundary>
     </HydrationBoundary>
-  ); 
+  );
 };
 
 export default Page;

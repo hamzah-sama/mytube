@@ -120,6 +120,7 @@ export const PlaylistVideosView = ({ playlistId }: Props) => {
                     userLoginId={user?.id}
                     playlistId={playlistId}
                     playlistClerkId={playlist.ownerClerkId}
+                    videoOwnerId={video.user.clerkId}
                   />
                 }
               />

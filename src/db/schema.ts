@@ -13,6 +13,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 import { createUpdateSchema, createInsertSchema } from "drizzle-zod";
+import z from "zod";
 
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -260,7 +261,7 @@ export const playlist = pgTable("playlists", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const playlistUpdateSchema = createUpdateSchema(playlist);
+export const playlistUpdateSchema = createUpdateSchema(playlist).extend({id: z.string()});
 
 
 export const playlistVideos = pgTable(

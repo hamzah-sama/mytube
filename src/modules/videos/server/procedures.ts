@@ -156,7 +156,7 @@ export const videoRouter = createTRPCRouter({
           and(
             existingVideo.categoryId
               ? eq(videos.categoryId, existingVideo.categoryId)
-              : sql`false`,
+              : sql`true`,
             not(eq(videos.id, existingVideo.id)),
             eq(videos.visibility, "public")
           )
