@@ -5,10 +5,12 @@ interface Options {
   total: number; // total items
   limit?: number; // increment per scroll
   rootMargin?: string;
+  enabled?: boolean;
 }
 
 export function useInfiniteScroll({
   total,
+  enabled = true,
   limit = DEFAULT_LIMIT,
   rootMargin = "200px",
 }: Options) {
@@ -20,6 +22,7 @@ export function useInfiniteScroll({
   }, [total]);
 
   useEffect(() => {
+    if(!enabled) return;
     if (!loaderRef.current) return;
 
     const observer = new IntersectionObserver(
@@ -33,7 +36,7 @@ export function useInfiniteScroll({
 
     observer.observe(loaderRef.current);
     return () => observer.disconnect();
-  }, [total, limit, rootMargin]);
+  }, [total, limit, rootMargin, enabled]);
 
   const isLoadingMore = visibleCount < total;
 
