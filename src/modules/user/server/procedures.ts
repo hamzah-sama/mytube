@@ -121,7 +121,8 @@ export const userRouter = createTRPCRouter({
               eq(videos.visibility, "public"),
               ownerId === userId ? sql`true` : sql`false`
             ),
-            eq(videos.userId, userId)
+            eq(videos.userId, userId),
+            eq(videos.muxStatus, "ready")
           )
         )
         .innerJoin(users, eq(videos.userId, users.id))
