@@ -27,7 +27,7 @@ export const TrendingView = () => {
         Most popular videos at the moment
       </p>
       {data?.length === 0 ? (
-        <p className="text-muted-foreground text-center pt-4`">
+        <p className="text-muted-foreground text-center pt-4">
           There are no trending videos at the moment
         </p>
       ) : (

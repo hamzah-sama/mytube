@@ -83,22 +83,24 @@ export const PlaylistVideosView = ({ playlistId }: Props) => {
             </p>
           </div>
           <div className="mt-10">
-            <Dropdown>
-              <DropdownMenuItem
-                className="cursor-pointer"
-                onClick={() => setOpenUpdatePlaylistModal(true)}
-              >
-                <Edit2Icon className="mr-2" />
-                Edit playlist
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="cursor-pointer"
-                onClick={() => setOpendeletePlaylistModal(true)}
-              >
-                <Trash2Icon className=" mr-2 text-red-400" />
-                Delete playlist
-              </DropdownMenuItem>
-            </Dropdown>
+            {user?.id === playlist.ownerClerkId && (
+              <Dropdown>
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  onClick={() => setOpenUpdatePlaylistModal(true)}
+                >
+                  <Edit2Icon className="mr-2" />
+                  Edit playlist
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  onClick={() => setOpendeletePlaylistModal(true)}
+                >
+                  <Trash2Icon className=" mr-2 text-red-400" />
+                  Delete playlist
+                </DropdownMenuItem>
+              </Dropdown>
+            )}
           </div>
         </div>
 
@@ -116,8 +118,8 @@ export const PlaylistVideosView = ({ playlistId }: Props) => {
                   <PlaylistVideoDropdown
                     videoId={video.id}
                     userLoginId={user?.id}
-                    videoOwnerId={video.user.clerkId}
                     playlistId={playlistId}
+                    playlistClerkId={playlist.ownerClerkId}
                   />
                 }
               />

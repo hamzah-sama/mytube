@@ -80,9 +80,9 @@ export const PlaylistModal = ({ open, setOpen, videoId }: Props) => {
               );
             })}
           {isLoadingMore && (
-            <p className="flex items-center justify-center">
+            <div ref={loaderRef} className="flex items-center justify-center">
               <Loader2Icon className="animate-spin size-4" />
-            </p>
+            </div>
           )}
           {addVideoToPlaylist.isPending && (
             <p className="flex items-center justify-center">

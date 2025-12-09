@@ -11,7 +11,6 @@ import { toast } from "sonner";
 
 interface Props {
   userLoginId?: string | null;
-  videoOwnerId: string;
   videoId: string;
   playlistId: string;
   playlistClerkId?: string | null;
@@ -19,7 +18,6 @@ interface Props {
 
 export const PlaylistVideoDropdown = ({
   userLoginId,
-  videoOwnerId,
   videoId,
   playlistId,
   playlistClerkId,
