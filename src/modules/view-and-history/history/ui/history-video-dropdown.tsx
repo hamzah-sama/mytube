@@ -53,7 +53,7 @@ export const HistoryVideoDropdown = ({
       />
       <PlaylistModal
         open={openPlaylistModal}
-        setOPen={setOpenPlaylistModal}
+        setOpen={setOpenPlaylistModal}
         videoId={videoId}
       />
       <Dropdown>

@@ -61,7 +61,6 @@ export const ThumbnailField = ({
       },
     })
   );
-  const [openEditThumbnail, setOPenEditThumbnail] = useState(false);
   const [openUploadModal, setOpenUploadModal] = useState(false);
 
   const { data: workflow } = useQuery(
@@ -92,6 +91,7 @@ export const ThumbnailField = ({
         open={openUploadModal}
         onOpenChange={setOpenUploadModal}
         title="Upload your image"
+        modal
       >
         <div className="cursor-pointer">
           <UploadDropzone
@@ -133,8 +133,6 @@ export const ThumbnailField = ({
             </div>
           )}
           <DropdownMenu
-            open={openEditThumbnail}
-            onOpenChange={setOPenEditThumbnail}
           >
             <DropdownMenuTrigger asChild>
               <button
@@ -150,8 +148,6 @@ export const ThumbnailField = ({
             <DropdownMenuContent
               side="right"
               align="start"
-              onMouseEnter={() => setOPenEditThumbnail(true)}
-              onMouseLeave={() => setOPenEditThumbnail(false)}
             >
               <DropdownMenuItem onClick={() => setOpenUploadModal(true)}>
                 <ImageIcon className="size-4 mr-2" />

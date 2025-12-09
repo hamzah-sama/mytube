@@ -1,3 +1,6 @@
+
+export const dynamic = "force-dynamic";
+
 import { SubscriptionsView } from "@/modules/subscriptions/ui/subscriptions-view";
 import { VideoColumnSkeleton } from "@/modules/videos/components/skeleton/video-skeleton";
 import { getQueryClient, trpc } from "@/trpc/server";

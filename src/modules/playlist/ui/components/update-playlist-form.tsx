@@ -29,10 +29,10 @@ interface Props {
   playlist: playlistType;
 }
 
-export const UpdatePlaylistForm = ({ setOpenModal , playlist}: Props) => {
+export const UpdatePlaylistForm = ({ setOpenModal, playlist }: Props) => {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
-  
+
   const form = useForm<z.infer<typeof playlistUpdateSchema>>({
     resolver: zodResolver(playlistUpdateSchema),
     defaultValues: playlist,
@@ -43,7 +43,9 @@ export const UpdatePlaylistForm = ({ setOpenModal , playlist}: Props) => {
       onSuccess: () => {
         form.reset();
         setOpenModal(false);
-        queryClient.invalidateQueries(trpc.playlist.getOne.queryOptions({ playlistId: playlist.id }));
+        queryClient.invalidateQueries(
+          trpc.playlist.getOne.queryOptions({ playlistId: playlist.id })
+        );
         toast.info("Playlist Updated");
       },
       onError: (err) => {

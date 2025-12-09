@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { Skeleton } from "@/components/ui/skeleton";
 import { PlaylistView } from "@/modules/playlist/ui/view/playlist-view";
 import { VideoError } from "@/modules/videos/components/video-error";

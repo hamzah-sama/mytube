@@ -9,14 +9,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { VideoThumbnail } from "@/components/video-thumbnail";
-import { DEFAULT_LIMIT } from "@/constant";
 import { useTRPC } from "@/trpc/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { GlobeIcon, Loader2Icon, LockIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
 import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useInfiniteScroll } from "@/utils/use-infinite-scroll";
 
 export const StudioVideoList = () => {
   const trpc = useTRPC();
@@ -24,31 +23,10 @@ export const StudioVideoList = () => {
 
   const { data } = useSuspenseQuery(trpc.studio.getMany.queryOptions());
 
-  const [visibleCount, setVisibleCount] = useState(DEFAULT_LIMIT);
-  const loaderRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    if (!loaderRef.current) return;
-
-    const observer = new IntersectionObserver(
-      ([entries]) => {
-        if (entries.isIntersecting) {
-          setVisibleCount((prev) =>
-            Math.min(prev + DEFAULT_LIMIT, data.length)
-          );
-        }
-      },
-      { rootMargin: "200px" } 
-    );
-
-    observer.observe(loaderRef.current);
-
-    return () => observer.disconnect();
-  }, [data.length]);
+  const {isLoadingMore, visibleCount, loaderRef} = useInfiniteScroll({ total: data.length });
 
   const visibleVideos = data.slice(0, visibleCount);
 
-  const isLoadingMore = visibleCount < data.length;
 
   if (data.length === 0) {
     return (
@@ -110,9 +88,9 @@ export const StudioVideoList = () => {
               <TableCell className="text-sm truncate">
                 {video.createdAt && format(video.createdAt, "dd MMM yyyy")}
               </TableCell>
-              <TableCell className="text-right">Views</TableCell>
-              <TableCell className="text-right">Comments</TableCell>
-              <TableCell className="text-right pr-6">Likes</TableCell>
+              <TableCell className="text-right">{video.viewCount}</TableCell>
+              <TableCell className="text-right">{video.totalComments}</TableCell>
+              <TableCell className="text-right pr-6">{video.totalLikes}</TableCell>
             </TableRow>
           ))}
         </TableBody>

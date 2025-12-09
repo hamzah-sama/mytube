@@ -11,8 +11,9 @@ interface Props {
   onOpenChange: (open: boolean) => void;
   children: React.ReactNode;
   title: string;
+  modal?: boolean;
 }
-export const UploadModal = ({ open, onOpenChange, children, title }: Props) => {
+export const UploadModal = ({ open, onOpenChange, children, title, modal=false }: Props) => {
   const isMobile = useIsMobile();
 
   if (isMobile) {
@@ -29,7 +30,7 @@ export const UploadModal = ({ open, onOpenChange, children, title }: Props) => {
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange} modal={false}>
+    <Dialog open={open} onOpenChange={onOpenChange} modal={modal}>
       <DialogContent>
         <DialogHeader className="flex justify-center items-center pt-4">
           <DialogTitle>{title}</DialogTitle>

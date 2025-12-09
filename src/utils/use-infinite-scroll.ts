@@ -26,12 +26,11 @@ export function useInfiniteScroll({
   };
 
   useEffect(() => {
-    setVisibleCount((prev) => Math.min(prev, total));
+    setVisibleCount(limit);
   }, [total]);
 
   useEffect(() => {
-    if (!enabled) return;
-    if (!loaderElement) return;
+    if (!enabled || !loaderElement) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
