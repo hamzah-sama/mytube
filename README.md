@@ -79,6 +79,7 @@ https://mytube-j2gq.vercel.app/
 
 
 ## Project structure
+```bash
   app/                 # Next.js App Router
     api/               # Webhooks, tRPC handlers, server endpoints
 
