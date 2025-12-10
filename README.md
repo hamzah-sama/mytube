@@ -1,36 +1,174 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📺 YouTube Clone – Full-Stack Video Platform
+
+YouTube-like video platform built with Next.js, tRPC, Drizzle ORM, and modern streaming infra using Mux. 
+Includes full social features: comments, reactions, subscriptions, playlists, history, trending, and more. 
+This project aims to replicate the core UX/UI of YouTube while implementing a clean, scalable, and production-ready architecture.
+
+## Live Demo / Preview
+https://mytube-j2gq.vercel.app/
+
+
+## 🚀 Tech Stack
+
+### Frontend
+- Next.js 15 – App Router, server actions
+- TailwindCSS – utility-first styling
+- ShadCN/UI – accessible UI components
+- tRPC Client – typesafe communication with the backend.
+- Mux Player – smooth, high-quality video playback in the browser.
+- UploadThing Dropzone – client-side file selection and upload UI.
+
+### Backend
+- tRPC Routers – fully typesafe backend API routes.
+- Drizzle ORM – typed SQL schema, migrations, and database queries.
+- Neon PostgreSQL – cloud-hosted serverless PostgreSQL database.
+- Mux Upload API & Webhooks – video uploading, processing, and encoding pipeline.
+- Upstash – background job
+- UploadThing Server Handlers – secure server-side file handling.
+- OpenAI API – generates title, description, and thumbnail
+
+
+
+
+## Features
+
+### Video System
+- Upload video via Mux
+- upload custom thumbnail via uploadthing
+- Auto-generated: Thumbnail, Title, Description (via OpenAI) 
+- HD streaming using Mux Player
+- View count tracking (server-side)
+
+### Home page
+- Category filtering
+- Search system
+- Adaptive layout (grid responsive like YouTube)
+
+### Trending Page
+- Video ranking based on: Views, interactivity(comments and likes) and more
+
+### Liked Videos page
+- Videos user has reacted “Like” to
+- Sorted by activity timestamp
+
+### Playlist System
+- Create & manage playlists
+- Add/remove any video
+- Privacy mode (public / private)
+- Playlist page with video list
+
+### Subscribe System
+Subscribe / unsubscribe to creators
+Subscription page with videos from subscribed channels
+
+### History page
+- Video watch history
+- Fully synced with server events
+- Auto-append when user watches video
+- clear or remove any video in the page history
+
+### Video Reactions
+- Like / dislike per video
+- Total global counts
+
+### Authentication
+- sign-in / sign-up feature powered by clerk
+- protected pages (requires login)
+- Protected routes with strict ownership access control
+
+
+
+## Project structure
+  app/                 # Next.js App Router
+    api/               # Webhooks, tRPC handlers, server endpoints
+
+  src/
+    components/        # Reusable UI components
+    db/                # Drizzle ORM schema & database utilities
+    lib/               # Reusable utilities & helpers
+    modules            # Self-contained feature modules used by App Router pages
+
+
+## Database schema (Drizzle)
+- users
+- videos
+- categories
+- view count
+- history
+- subscriptions
+- like
+- dislike
+- comments
+- comments like count
+- comments dislike count
+- playlist
+- playlist videos
+
+
+
+## API – tRPC Routers
+- categoriesRouter
+- authRouter
+- userRouter
+- studioRouter
+- videoRouter
+- ViewCountRouter
+- subscriptionsRouter
+- reactionRouter
+- commentsRouter
+- commentsReactionRouter
+- historyRouter
+- playlistRouter
+
+
+
+## Future Improvements
+- Live streaming (Mux Live)
+- Notifications system
+- Channel monetization
+- Multi-language subtitles using Whisper
+
+
 
 ## Getting Started
 
-First, run the development server:
+1. Clone the repository
+git clone https://github.com/<hamzah-sama>/<mytube>
+cd mytube
 
-```bash
+2. Install dependencies
+npm instaal
+
+3. Set environment variables
+
+Create a .env file and fill in all required keys:
+
+DATABASE_URL= 
+
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+CLERK_SECRET_KEY
+CLERK_WEBHOOK_SIGNING_SECRET
+
+MUX_TOKEN_ID=
+MUX_TOKEN_SECRET=
+MUX_WEBHOOK_SECRET=
+
+UPLOADTHING_TOKEN=
+
+# Local QStash Credentials
+QSTASH_URL=
+QSTASH_TOKEN=
+QSTASH_CURRENT_SIGNING_KEY=
+QSTASH_NEXT_SIGNING_KEY=
+
+
+OPENAI_API_KEY=
+
+WORKFLOW_BASE_URL = 'http://localhost:3000'
+
+
+4. run database push
+npm run drizzle-kit push
+
+5. Start the development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
