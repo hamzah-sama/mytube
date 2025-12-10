@@ -58,8 +58,8 @@ https://mytube-j2gq.vercel.app/
 - Playlist page with video list
 
 ### Subscribe System
-Subscribe / unsubscribe to creators
-Subscription page with videos from subscribed channels
+- Subscribe / unsubscribe to creators
+- Subscription page with videos from subscribed channels
 
 ### History page
 - Video watch history
@@ -132,16 +132,14 @@ Subscription page with videos from subscribed channels
 
 ## Getting Started
 
-1. Clone the repository
-git clone https://github.com/<hamzah-sama>/<mytube>
-cd mytube
+1. Clone the repositor
+- git clone https://github.com/<hamzah-sama>/<mytube>
+- cd mytube
 
 2. Install dependencies
-npm instaal
+- npm instal
 
 3. Set environment variables
-
-Create a .env file and fill in all required keys:
 
 - DATABASE_URL= 
 - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
@@ -160,7 +158,7 @@ Create a .env file and fill in all required keys:
 
 
 4. run database push
-npm run drizzle-kit push
+- npm run drizzle-kit push
 
 5. Start the development server
-npm run dev
+- npm run dev
