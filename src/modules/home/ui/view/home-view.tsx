@@ -1,27 +1,31 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { CategoriesSection } from "@/modules/categories/ui/categories-section";
 import { getQueryClient, trpc } from "@/trpc/server";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
+import { HomeVideosSection } from "@/modules/home/ui/components/home-video-section";
 
-export const HomeView = async() => {
+export const HomeView = async () => {
   const queryClient = getQueryClient();
   void queryClient.prefetchQuery(trpc.categories.getMany.queryOptions());
   return (
-    <div className="flex flex-col mx-auto max-w-[2400px] px-4">
-      <HydrationBoundary state={dehydrate(queryClient)}>
-        <ErrorBoundary fallback={<p>Something went wrong</p>}>
-          <Suspense fallback={<CategorySectionSkeleton />}>
-            <CategoriesSection />
-          </Suspense>
-        </ErrorBoundary>
-      </HydrationBoundary>
-    </div>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <ErrorBoundary
+        fallback={
+          <p className="flex justify-center text-muted-foreground">
+            Something went wrong
+          </p>
+        }
+      >
+        <Suspense fallback={<CategorySectionSkeleton />}>
+          <HomeVideosSection />
+        </Suspense>
+      </ErrorBoundary>
+    </HydrationBoundary>
   );
 };
 
-const CategorySectionSkeleton = () => {
+export const CategorySectionSkeleton = () => {
   return (
     <div className="flex items-center gap-4 px-10 overflow-hidden">
       {Array.from({ length: 15 }).map((_, index) => (
