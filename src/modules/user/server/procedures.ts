@@ -191,4 +191,10 @@ export const userRouter = createTRPCRouter({
         );
       return data;
     }),
+
+  getUserId: protectedProcedure.query(async ({ ctx }) => {
+    const { userId } = ctx.auth;
+
+    return userId;
+  }),
 });

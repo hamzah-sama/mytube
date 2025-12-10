@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { SearchInput } from "./search-input";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { AuthButton } from "@/components/auth-button";
+import { AuthButton } from "@/modules/auth/ui/auth-button";
 import { ThemeToggle } from "@/components/theme/themeToggle";
 
 export const LayoutNavbar = () => {

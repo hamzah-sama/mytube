@@ -1,14 +1,14 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { useTRPC } from "@/trpc/client";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
-import {
-  ClapperboardIcon,
-  UserCircleIcon,
-} from "lucide-react";
-
+import { useQuery } from "@tanstack/react-query";
+import { ClapperboardIcon, UserCircleIcon } from "lucide-react";
 
 export const AuthButton = () => {
+  const trpc = useTRPC();
+  const {data: userId} = useQuery(trpc.user.getUserId.queryOptions());
   return (
     <>
       <SignedOut>
@@ -29,6 +29,11 @@ export const AuthButton = () => {
               label="Studio"
               href="/studio"
               labelIcon={<ClapperboardIcon className="size-4" />}
+            />
+            <UserButton.Link
+              label="Profile"
+              href={`users/${userId}`}
+              labelIcon={<UserCircleIcon className="size-4" />}
             />
           </UserButton.MenuItems>
         </UserButton>
