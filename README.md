@@ -143,7 +143,7 @@ https://mytube-j2gq.vercel.app/
 
 2. Install dependencies
 ```bash
-npm instal
+npm install
 ```
 
 3. Set environment variables
