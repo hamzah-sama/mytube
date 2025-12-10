@@ -137,7 +137,7 @@ https://mytube-j2gq.vercel.app/
 
 1. Clone the repositor
 ```bash
-- git clone https://github.com/<hamzah-sama>/<mytube>
+- git clone https://github.com/hamzah-sama/mytube
 - cd mytube
 ```
 
