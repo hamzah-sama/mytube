@@ -89,6 +89,8 @@ https://mytube-j2gq.vercel.app/
     lib/               # Reusable utilities & helpers
     modules            # Self-contained feature modules used by App Router pages
 
+```
+
 
 ## Database schema (Drizzle)
 - users
@@ -134,14 +136,20 @@ https://mytube-j2gq.vercel.app/
 ## Getting Started
 
 1. Clone the repositor
+```bash
 - git clone https://github.com/<hamzah-sama>/<mytube>
 - cd mytube
+```
 
 2. Install dependencies
-- npm instal
+```bash
+npm instal
+```
 
 3. Set environment variables
+- Create a .env file and fill in all required keys:
 
+```bash
 - DATABASE_URL= 
 - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 - CLERK_SECRET_KEY
@@ -156,10 +164,15 @@ https://mytube-j2gq.vercel.app/
 - QSTASH_NEXT_SIGNING_KEY=
 - OPENAI_API_KEY=
 - WORKFLOW_BASE_URL = 'http://localhost:3000'
+```
 
 
 4. run database push
-- npm run drizzle-kit push
+```bash
+npm run drizzle-kit push
+```
 
 5. Start the development server
-- npm run dev
+```bash
+npm run dev
+```
