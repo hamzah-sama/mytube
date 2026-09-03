@@ -35,7 +35,6 @@ export const VideoDetails = ({ video }: Props) => {
                   ownerLink={`/studio/video/${video.id}`}
                   ownerText='Manage video'
                 />
-                {/* <SubscribeButton video={video} /> */}
               </div>
               <div className="flex items-center gap-6">
                 <VideoReaction
@@ -46,7 +45,6 @@ export const VideoDetails = ({ video }: Props) => {
                 />
                 <CopyButton video={video} />
                 <GeneralVideoDropdown
-                  userLoginId={user?.id}
                   videoOwnerId={video.user.clerkId}
                   videoId={video.id}
                 />

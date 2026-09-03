@@ -5,32 +5,24 @@ interface Options {
   total: number; // total items
   limit?: number; // increment per scroll
   rootMargin?: string;
-  enabled?: boolean;
 }
 
 export function useInfiniteScroll({
   total,
-  enabled = true,
   limit = DEFAULT_LIMIT,
   rootMargin = "200px",
 }: Options) {
-  const [visibleCount, setVisibleCount] = useState(limit);
-  const loaderRef = useRef<HTMLDivElement | null>(null);
+  const [visibleCount, setVisibleCount] = useState<number>(limit);
   const [loaderElement, setLoaderElement] = useState<HTMLDivElement | null>(
-    null
+    null,
   );
-
-  const setRefs = (element: HTMLDivElement | null) => {
-    loaderRef.current = element;
-    setLoaderElement(element);
-  };
 
   useEffect(() => {
     setVisibleCount(limit);
-  }, [total]);
+  }, [total, limit]);
 
   useEffect(() => {
-    if (!enabled || !loaderElement) return;
+    if (!loaderElement) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -38,18 +30,18 @@ export function useInfiniteScroll({
           setVisibleCount((prev) => Math.min(prev + limit, total));
         }
       },
-      { rootMargin }
+      { rootMargin },
     );
 
     observer.observe(loaderElement);
     return () => observer.disconnect();
-  }, [total, limit, rootMargin, enabled, loaderElement]);
+  }, [total, limit, rootMargin, loaderElement]);
 
   const isLoadingMore = visibleCount < total;
 
   return {
     visibleCount,
-    loaderRef: setRefs,
+    loaderRef: setLoaderElement,
     isLoadingMore,
   };
 }

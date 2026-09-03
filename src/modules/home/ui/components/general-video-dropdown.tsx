@@ -1,24 +1,20 @@
 import { Dropdown } from "@/components/dropdown";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { PlaylistModal } from "@/modules/playlist/ui/components/playlist-modal";
-import { useClerk } from "@clerk/nextjs";
+import { useClerk, useUser } from "@clerk/nextjs";
 import { ListIcon, SettingsIcon, XIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
 interface Props {
-  userLoginId: string | undefined;
   videoOwnerId: string;
   videoId: string;
 }
 
-export const GeneralVideoDropdown = ({
-  userLoginId,
-  videoOwnerId,
-  videoId,
-}: Props) => {
+export const GeneralVideoDropdown = ({ videoOwnerId, videoId }: Props) => {
   const { isSignedIn } = useClerk();
+  const { user } = useUser();
   const clerk = useClerk();
   const router = useRouter();
   const [openPlaylistModal, setOpenPlaylistModal] = useState(false);
@@ -43,7 +39,7 @@ export const GeneralVideoDropdown = ({
           <ListIcon className="size-4 mr-2" />
           Add to playlist
         </DropdownMenuItem>
-        {userLoginId === videoOwnerId && (
+        {user?.id === videoOwnerId && (
           <DropdownMenuItem
             onClick={() => router.push(`/studio/video/${videoId}`)}
           >

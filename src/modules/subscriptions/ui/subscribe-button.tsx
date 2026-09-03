@@ -26,20 +26,17 @@ export const SubscribeButton = ({
   const { openSignIn } = useClerk();
   const trpc = useTRPC();
   const queryClient = useQueryClient();
-  const { userId: clerkUserId, isSignedIn } = useAuth();
+  const { isSignedIn } = useAuth();
 
   const createSubscriber = useMutation(
     trpc.subscription.create.mutationOptions({
       onSuccess: () => {
         if (userId) {
           queryClient.invalidateQueries(
-            trpc.user.getOne.queryOptions({ userId })
+            trpc.user.getOne.queryOptions({ userId }),
           );
           queryClient.invalidateQueries(
-            trpc.subscription.isSubscribed.queryOptions({ userId })
-          );
-          queryClient.invalidateQueries(
-            trpc.subscription.getCreators.queryOptions()
+            trpc.subscription.isSubscribed.queryOptions({ userId }),
           );
         }
         if (videoId) {
@@ -47,15 +44,15 @@ export const SubscribeButton = ({
           queryClient.invalidateQueries(
             trpc.video.getOne.queryOptions({
               videoPlaybackId,
-            })
+            }),
           );
           queryClient.invalidateQueries(
-            trpc.subscription.isSubscribed.queryOptions({ videoId })
-          );
-          queryClient.invalidateQueries(
-            trpc.subscription.getCreators.queryOptions()
+            trpc.subscription.isSubscribed.queryOptions({ videoId }),
           );
         }
+        queryClient.invalidateQueries(
+          trpc.subscription.getCreators.queryOptions(),
+        );
       },
       onError: (err) => {
         toast.error(err.message);
@@ -63,7 +60,7 @@ export const SubscribeButton = ({
           openSignIn();
         }
       },
-    })
+    }),
   );
 
   const handleSubscribe = () => {
@@ -82,7 +79,7 @@ export const SubscribeButton = ({
     ...(userId
       ? trpc.subscription.isSubscribed.queryOptions({ userId })
       : trpc.subscription.isSubscribed.queryOptions({ videoId })),
-    enabled: !!clerkUserId,
+    enabled: isSignedIn,
   });
 
   const [subscribed, setSubscribed] = useState(isSubscribed ?? false);
