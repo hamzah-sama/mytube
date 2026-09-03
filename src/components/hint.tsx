@@ -7,13 +7,16 @@ import {
 interface Props {
   children: React.ReactNode;
   text: string;
+  side? : "top" | "right" | "bottom" | "left";
+  align? : "start" | "center" | "end";
+  
 }
 
-export const Hint = ({ children, text }: Props) => {
+export const Hint = ({ children, text, side, align }: Props) => {
   return (
-    <Tooltip>
+    <Tooltip >
       <TooltipTrigger asChild>{children}</TooltipTrigger>
-      <TooltipContent>
+      <TooltipContent side={side} align={align} className="max-w-[400px]">
         <p>{text}</p>
       </TooltipContent>
     </Tooltip>

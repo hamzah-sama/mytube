@@ -1,0 +1,162 @@
+"use client";
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { VideoThumbnail } from "@/components/video-thumbnail";
+import { useTRPC } from "@/trpc/client";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { GlobeIcon, Loader2Icon, LockIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { format } from "date-fns";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useInfiniteScroll } from "@/utils/use-infinite-scroll";
+
+export const StudioVideoList = () => {
+  const trpc = useTRPC();
+  const router = useRouter();
+
+  const { data } = useSuspenseQuery(trpc.studio.getMany.queryOptions());
+
+  const {isLoadingMore, visibleCount, loaderRef} = useInfiniteScroll({ total: data.length });
+
+  const visibleVideos = data.slice(0, visibleCount);
+
+
+  if (data.length === 0) {
+    return (
+      <div className="flex justify-center items-center py-6">
+        <p className="text-muted-foreground">No videos found in your channel</p>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <Table>
+        <TableHeader>
+          <TableRow className="bg-gray-100/30 border-none">
+            <TableHead className="pl-6 w-[750px]">Video</TableHead>
+            <TableHead>Visibility</TableHead>
+            <TableHead>status</TableHead>
+            <TableHead>Date</TableHead>
+            <TableHead className="text-right">Views</TableHead>
+            <TableHead className="text-right">Comments</TableHead>
+            <TableHead className="text-right pr-6">Likes</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {visibleVideos.map((video) => (
+            <TableRow
+              key={video.id}
+              onClick={() => router.push(`/studio/video/${video.id}`)}
+              className="cursor-pointer"
+            >
+              <TableCell className="pl-6 font-medium w-[750px]">
+                <div className="flex gap-4">
+                  <div className="relative aspect-video w-36 shrink-0">
+                    <VideoThumbnail
+                      thumbnail={video.thumbnailUrl}
+                      preview={video.previewUrl}
+                      duration={video.duration}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1 max-w-[400px]">
+                    <p className="text-sm truncate">{video.title}</p>
+                    <p className="text-sm text-muted-foreground truncate">
+                      {video.description || "No description"}
+                    </p>
+                  </div>
+                </div>
+              </TableCell>
+              <TableCell className="capitalize">
+                <p className="flex items-center w-full">
+                  {video.visibility === "private" ? (
+                    <LockIcon className="size-4 mr-2" />
+                  ) : (
+                    <GlobeIcon className="size-4 mr-2" />
+                  )}
+                  {video.visibility}
+                </p>
+              </TableCell>
+              <TableCell className="capitalize">{video.muxStatus}</TableCell>
+              <TableCell className="text-sm truncate">
+                {video.createdAt && format(video.createdAt, "dd MMM yyyy")}
+              </TableCell>
+              <TableCell className="text-right">{video.viewCount}</TableCell>
+              <TableCell className="text-right">{video.totalComments}</TableCell>
+              <TableCell className="text-right pr-6">{video.totalLikes}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+
+      {/* Loader sentinel */}
+      {isLoadingMore && (
+        <div ref={loaderRef} className="flex justify-center py-6">
+          <Loader2Icon className="size-5 animate-spin text-muted-foreground" />
+        </div>
+      )}
+    </>
+  );
+};
+
+export const StudioVideoListSkeleton = () => {
+  return (
+    <>
+      <Table>
+        <TableHeader>
+          <TableRow className="bg-gray-100/30 border-none">
+            <TableHead className="pl-6 w-[750px]">Video</TableHead>
+            <TableHead>Visibility</TableHead>
+            <TableHead>status</TableHead>
+            <TableHead>Date</TableHead>
+            <TableHead className="text-right">Views</TableHead>
+            <TableHead className="text-right">Comments</TableHead>
+            <TableHead className="text-right pr-6">Likes</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {Array.from({ length: 5 }).map((_, index) => (
+            <TableRow key={index}>
+              <TableCell className="pl-6 w-[750px]">
+                <div className="flex item-center gap-4">
+                  <div className="relative aspect-video w-36">
+                    <Skeleton className="w-full h-full" />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <Skeleton className="w-36 h-5" />
+                    <Skeleton className="w-36 h-3" />
+                  </div>
+                </div>
+              </TableCell>
+              <TableCell>
+                <Skeleton className="w-20 h-5" />
+              </TableCell>
+              <TableCell>
+                <Skeleton className="w-20 h-5" />
+              </TableCell>
+              <TableCell>
+                <Skeleton className="w-20 h-5" />
+              </TableCell>
+              <TableCell className="text-right">
+                <Skeleton className="w-20 h-5" />
+              </TableCell>
+              <TableCell className="text-right">
+                <Skeleton className="w-20 h-5" />
+              </TableCell>
+              <TableCell className="text-right pr-6">
+                <Skeleton className="w-20 h-5" />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </>
+  );
+};

@@ -52,7 +52,7 @@ export const FilterCarousel = ({ data, value, onSelect }: Props) => {
         <CarouselContent className="-ml-3">
           <CarouselItem className="pl-3 basis-auto">
             <Badge
-              className="text-sm py-2 px-4 rounded-md"
+              className="text-sm py-2 px-4 rounded-md cursor-pointer"
               variant={value === null ? "default" : "secondary"}
               onClick={() => onSelect?.(null)}
             >
@@ -62,13 +62,11 @@ export const FilterCarousel = ({ data, value, onSelect }: Props) => {
           {data.map((item) => (
             <CarouselItem key={item.id} className="pl-5 basis-auto">
               <Badge
-                className="text-sm py-2 rounded-md"
+                className="text-sm py-2 rounded-md cursor-pointer"
                 variant={value === item.id ? "default" : "secondary"}
                 onClick={() => onSelect?.(item.id)}
               >
-                <Link href={`/categories?category=${item.name}`}>
-                  {item.name}
-                </Link>
+                {item.name}
               </Badge>
             </CarouselItem>
           ))}
